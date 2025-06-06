@@ -1,0 +1,1082 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Nouvelle Maquette - Studio</title>
+  
+  <!-- GSAP CDN -->
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.1/gsap.min.js"></script>
+  <!-- ScrollTrigger CDN -->
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.1/ScrollTrigger.min.js"></script>
+  
+  <style>
+    /* ----- IMPORTS ET GRID BACKGROUND ----- */
+    @import url('https://unpkg.com/normalize.css') layer(normalize);
+    @import url('https://fonts.googleapis.com/css2?family=Geist:wght@100..900&display=swap');
+    
+    /* Définir les layers (pour organiser les styles) */
+    @layer normalize, base, demo, stick, effect, scrollbar, debug;
+    
+    @font-face {
+      font-family: 'NullFree';
+      src: url('assets/fonts/nullfree/Null_Free.otf') format('opentype');
+      font-weight: normal;
+      font-style: normal;
+    }
+    
+
+    @font-face {
+      font-family: 'sfrprodisplay-medium';
+      src: url('assets/fonts/sfprodisplay/SFPRODISPLAYBOLD.OTF') format('opentype');
+      font-weight: normal;
+      font-style: normal;
+    }
+    @layer debug {
+      [data-debug='true'] li {
+        outline: 0.05em dashed currentColor;
+      }
+      [data-debug='true'] :is(h2, li:last-of-type) {
+        outline: 0.05em dashed canvasText;
+      }
+    }
+    
+    @layer scrollbar {
+      @property --hue {
+        initial-value: 0;
+        syntax: '<number>';
+        inherits: false;
+      }
+      @property --chroma {
+        initial-value: 0;
+        syntax: '<number>';
+        inherits: true;
+      }
+    
+      [data-sync-scrollbar='true'] {
+        scrollbar-color: oklch(var(--lightness) var(--chroma) var(--hue)) #0000;
+      }
+      @supports (animation-timeline: scroll()) and (animation-range: 0% 100%) {
+        [data-sync-scrollbar='true'][data-animate='true'] {
+          timeline-scope: --list;
+          scrollbar-color: oklch(var(--lightness) var(--chroma, 0) var(--hue)) #0000;
+          animation-name: change, chroma-on, chroma-off;
+          animation-fill-mode: both;
+          animation-timing-function: linear;
+          animation-range: entry 50% exit 50%, entry 40% entry 50%, exit 30% exit 40%;
+          animation-timeline: --list;
+          ul { view-timeline: --list; }
+        }
+      }
+    
+      @keyframes change {
+        to { --hue: var(--end); }
+      }
+      @keyframes chroma-on { to { --chroma: 0.3; } }
+      @keyframes chroma-off { to { --chroma: 0; } }
+    }
+    
+    @layer effect {
+      :root {
+        --start: 0;
+        --end: 360;
+        --lightness: 65%;
+        --base-chroma: 0.3;
+      }
+      [data-theme='dark'] { --lightness: 75%; }
+      [data-theme='light'] { --lightness: 65%; }
+      @media (prefers-color-scheme: dark) { --lightness: 75%; }
+      ul { --step: calc((var(--end) - var(--start)) / (var(--count) - 1)); }
+      li:not(:last-of-type) {
+        color: oklch(var(--lightness) var(--base-chroma) calc(var(--start) + (var(--step) * var(--i))));
+      }
+    
+      @supports (animation-timeline: scroll()) and (animation-range: 0% 100%) {
+        [data-animate='true'] {
+          li {
+            opacity: 0.2;
+            animation-name: brighten;
+            &:first-of-type { --start-opacity: 1; }
+            &:last-of-type { --brightness: 1; --end-opacity: 1; }
+            animation-fill-mode: both;
+            animation-timing-function: linear;
+            animation-range: cover calc(50% - 1lh) calc(50% + 1lh);
+            animation-timeline: view();
+          }
+        }
+    
+        @keyframes brighten {
+          0% { opacity: var(--start-opacity, 0.2); }
+          50% { opacity: 1; filter: brightness(var(--brightness, 1.2)); }
+          100% { opacity: var(--end-opacity, 0.2); }
+        }
+      }
+    }
+    
+    @layer stick {
+      section:first-of-type {
+        --font-level: 6;
+        display: flex;
+        line-height: 1.25;
+        width: 100%;
+        padding-left: 5rem;
+      }
+      section:last-of-type {
+        min-height: 100vh;
+        display: flex;
+        place-items: center;
+        width: 100%;
+        justify-content: center;
+        h2 { --font-level: 6; }
+      }
+      main { width: 100%; }
+      section:first-of-type h2 {
+        position: sticky;
+        top: calc(50% - 0.5lh);
+        font-size: inherit;
+        margin: 0;
+        display: inline-block;
+        height: fit-content;
+        font-weight: 600;
+      }
+      ul {
+        font-weight: 600;
+        padding-inline: 0;
+        margin: 0;
+        list-style-type: none;
+      }
+      [data-snap='true'] {
+        scroll-snap-type: y proximity;
+        li { scroll-snap-align: center; }
+      }
+      h2,
+      li:last-of-type {
+        background: linear-gradient(canvasText 50%, color-mix(in oklch, canvas, canvasText 25%));
+        background-clip: text;
+        color: #0000;
+      }
+    }
+    
+    @layer demo {
+      header {
+        min-height: 100vh;
+        display: flex;
+        place-items: center;
+        width: 100%;
+        padding-inline: 5rem;
+      }
+      footer { padding-block: 2rem; opacity: 0.5; }
+      h1 {
+        --font-size-min: 24;
+        --font-level: 8;
+        text-wrap: pretty;
+        line-height: 0.8;
+        margin: 0;
+        background: linear-gradient(canvasText 60%, color-mix(in oklch, canvas, canvasText));
+        background-clip: text;
+        color: #0000;
+      }
+    }
+    
+    @layer base {
+      :root {
+        --font-size-min: 14;
+        --font-size-max: 20;
+        --font-ratio-min: 1.1;
+        --font-ratio-max: 1.33;
+        --font-width-min: 375;
+        --font-width-max: 1500;
+      }
+      html { color-scheme: light dark; }
+      [data-theme='light'] { color-scheme: light only; }
+      [data-theme='dark'] { color-scheme: dark only; }
+      :where(.fluid) {
+        --fluid-min: calc(var(--font-size-min) * pow(var(--font-ratio-min), var(--font-level, 0)));
+        --fluid-max: calc(var(--font-size-max) * pow(var(--font-ratio-max), var(--font-level, 0)));
+        --fluid-preferred: calc((var(--fluid-max) - var(--fluid-min)) / (var(--font-width-max) - var(--font-width-min)));
+        --fluid-type: clamp(
+          (var(--fluid-min) / 16) * 1rem,
+          ((var(--fluid-min) / 16) * 1rem) -
+            (((var(--fluid-preferred) * var(--font-width-min)) / 16) * 1rem) +
+            (var(--fluid-preferred) * var(--variable-unit, 100vi)),
+          (var(--fluid-max) / 16) * 1rem
+        );
+        font-size: var(--fluid-type);
+      }
+      *,
+      *::after,
+      *::before { box-sizing: border-box; }
+      body {
+        display: grid;
+        place-items: center;
+        background: light-dark(white, black);
+        min-height: 100vh;
+        font-family: 'NullFree', sans-serif;
+      }
+      /* Grille de fond */
+      body::before {
+        --size: 45px;
+        --line: color-mix(in hsl, canvasText, transparent 70%);
+        content: '';
+        height: 100vh;
+        width: 100vw;
+        position: fixed;
+        background:
+          linear-gradient(90deg, var(--line) 1px, transparent 1px var(--size)) 50% 50% / var(--size) var(--size),
+          linear-gradient(var(--line) 1px, transparent 1px var(--size)) 50% 50% / var(--size) var(--size);
+        mask: linear-gradient(-20deg, transparent 50%, white);
+        top: 0;
+        transform-style: flat;
+        pointer-events: none;
+        z-index: -1;
+      }
+    
+      .bear-link {
+        color: canvasText;
+        position: fixed;
+        top: 1rem;
+        left: 1rem;
+        width: 48px;
+        aspect-ratio: 1;
+        display: grid;
+        place-items: center;
+        opacity: 0.8;
+      }
+      :where(.x-link, .bear-link):is(:hover, :focus-visible) { opacity: 1; }
+      .bear-link svg { width: 75%; }
+      .sr-only {
+        position: absolute;
+        width: 1px;
+        height: 1px;
+        padding: 0;
+        margin: -1px;
+        overflow: hidden;
+        clip: rect(0, 0, 0, 0);
+        white-space: nowrap;
+        border-width: 0;
+      }
+    }
+    
+    /* ----- Code spécifique au projet (NE PAS MODIFIER la mise en page existante) ----- */
+    
+    .hero {
+      position: relative;
+      width: 100%;
+      height: 100vh;
+      overflow: hidden;
+      pointer-events: none;
+    }
+    .content {
+      position: absolute;
+      top: 50%;
+      left: 50%;
+      transform: translate(-50%, -50%);
+      width: 90%;
+      height: 98%;
+      text-align: left;
+    }
+    .line1 {
+      font-family: 'NullFree', sans-serif;
+      font-size: 25vw;
+      width: 100%;
+      color: #fff;
+      line-height: 1;
+    }
+    .line1 span { display: inline-block; opacity: 0; transform: translateY(50px); }
+    .line2-wrapper {
+      display: flex;
+      align-items: center;
+      justify-content: flex-start;
+      margin-top: -0.2rem;
+    }
+    .line2-text {
+      display: inline-flex;
+      align-items: center;
+      font-family: 'NullFree', sans-serif;
+      font-size: 20vw;
+      letter-spacing: 0.5vw;
+      color: #fff;
+      line-height: 1;
+    }
+    .line2-text span.letter { display: inline-block; opacity: 0; transform: translateY(50px); }
+    .line2-text span.square {
+      display: inline-block;
+      width: 0.2em;
+      height: 0.2em;
+      background: #fff;
+      margin-left: 0.2em;
+      opacity: 0;
+      transform: scale(0.5);
+    }
+    .circle-wrapper { margin-left: 1rem; }
+    .circle-text-container { width: 300px; height: 300px; }
+    .circle-text-container svg { width: 100%; height: 100%; }
+    .circle-text {
+      font-family: sans-serif;
+      font-weight: bold;
+      font-size: 1.3rem;
+      fill: #fff;
+    }
+    .line3 {
+      font-family: 'Helvetica Neue', sans-serif;
+      color: #fff;
+      font-size: 7vw;
+      line-height: 1;
+      opacity: 0;
+      margin-top: -1.4rem;
+    }
+    .button-container {
+      position: fixed;
+      bottom: 30px;
+      left: 50%;
+      transform: translateX(-50%);
+      z-index: 10;
+      pointer-events: none;
+      box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
+      border-radius: 30px;
+    }
+    .button-inner {
+      display: flex;
+      width: 300px;
+      height: 50px;
+      border-radius: 30px;
+      overflow: hidden;
+      background: #fff;
+    }
+    .button-image {
+      width: 0;
+      overflow: hidden;
+    }
+    .button-image img {
+      display: block;
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+    }
+    .button-content {
+      flex-grow: 1;
+      white-space: nowrap;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      padding: 10px 15px;
+      background: #000;
+      color: #fff;
+      font-family: 'NullFree', sans-serif;
+      font-size: 1em;
+      border-radius: 30px;
+      margin: 5px;
+    }
+    
+    /* ----- Nouvelle section "YOU CAN" ----- */
+    .you-can-section {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      min-height: 200vh;
+      padding: 2rem;
+      background: transparent;
+    }
+    .pinned-text {
+      font-family: 'Geist', 'SF Pro Text', 'SF Pro Icons', 'AOS Icons',
+        'Helvetica Neue', Helvetica, Arial, sans-serif, system-ui;
+        font-weight: bold;
+      font-size: 6vw;
+      color: #fff;
+      margin-right: 2rem;
+    }
+    .list-column {
+      
+
+      scroll-snap-type: y mandatory;
+      flex: 1;
+      /* Ajustement pour que le haut de la liste apparaisse après le pin du texte */
+    }
+    .youcan-list {
+      padding-top: 90vh;
+      font-weight: bold;
+      list-style: none;
+     
+    }
+    .youcan-list li {
+      scroll-snap-align: center;
+      font-family: 'Geist', 'SF Pro Text', 'SF Pro Icons', 'AOS Icons',
+        'Helvetica Neue', Helvetica, Arial, sans-serif, system-ui;
+      font-size: 6vw;
+      opacity: 0.2;
+      margin-bottom: 2rem;
+      transition: opacity 0.3s, filter 0.3s;
+    }
+    
+    /* ----- Section "Cards" modifiée ----- */
+
+    .cards-section {
+      height: fit-content;
+      width: 100%;
+      padding: 3rem 0;
+      background: #111;
+      margin-top: 4rem; /* Espace supplémentaire entre YOU CAN et Cards */
+    }
+    .cards-container {
+      position: relative;
+      width: 90%;
+      max-width: 1200px;
+      margin: 0 auto;
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+      gap: 2rem;
+      align-items: center;
+    }
+    .card {
+      width: 100%;
+      height: 90vh; /* Hauteur de 80vh pour chaque carte */
+      background: #171717;               /* Fond noir */
+      border: 1px solid #333;         /* Bordure sombre */
+      border-radius: 20px;
+      box-shadow: 0 4px 12px rgba(0,0,0,0.8);  /* Effet surélevé */
+      overflow: hidden;
+      display: flex;
+    }
+    
+    
+    /* gauche = 60%, droite = 40% */
+    .card-left {
+      flex: 1 1 50%;
+      padding: 2rem;
+      display: flex;
+      flex-direction: column;
+      justify-content: space-between; /* titre en haut, boutons en bas */
+    }
+    .card-right {
+      flex: 0 0 50%;
+      padding-left: 4em;
+      padding-right: 4em;
+      padding-top: 2em;
+      padding-bottom: 2em;
+      
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+    .card-right video {
+    
+      
+     border-radius: 20px;
+    }
+    /* on passe la marge à 3rem pour bien séparer titre / sous‑titre */
+.card-title {
+  font-size: 6rem;
+  color: #fff;
+  font-family: 'sfrprodisplay-medium', sans-serif;
+  margin: 0 0 3rem;  /* ← ici on a augmenté la marge */
+}
+
+.card-subtitle {
+  font-size: 2.5rem;
+  color: #ccc;
+  font-family: 'sfprodisplay-medium', sans-serif;
+  margin: 0;          /* tu peux aussi ajouter un margin-top si tu veux */
+  /* par exemple : margin: 1rem 0 0; */
+}
+
+    /* Boutons Google Play + App Store */
+    .playstore-button,
+    .appstore-button {
+      font-family: 'Helvetica Neue', sans-serif;
+
+      display: inline-flex;
+      align-items: center;
+      border: 2px solid #fff;
+      border-radius: 9999px;
+      background-color: #000;
+      padding: 0.625rem 1.5rem;
+      color: #fff;
+      text-decoration: none;
+      transition: all 0.2s ease;
+      margin-right: 1rem;
+    }
+    .playstore-button:hover,
+    .appstore-button:hover {
+      background-color: transparent;
+      color: #fff;
+    }
+    .playstore-button .icon,
+    .appstore-button .icon {
+      width: 1.5rem;
+      height: 1.5rem;
+    }
+    .playstore-button .texts,
+    .appstore-button .texts {
+      display: flex;
+      flex-direction: column;
+      align-items: flex-start;
+      margin-left: 1rem;
+      line-height: 1;
+    }
+    .playstore-button .text-1,
+    .appstore-button .text-1 {
+      font-size: 0.75rem;
+      line-height: 1rem;
+      margin-bottom: 0.25rem;
+    }
+    .playstore-button .text-2,
+    .appstore-button .text-2 {
+      font-weight: 600;
+    }
+
+    /* Card 1 : video responsive */
+    .card2 video {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+    }
+
+    /* Card 2 : scatter images */
+    .card1 .scatter-img {
+      position: absolute;
+      width: 40%;
+      object-fit: cover;
+      filter: drop-shadow(0 5px 10px rgba(0,0,0,0.5));
+      transition: transform 0.3s ease-out;
+    }
+    .card1 .img1 { top: 7%; left: 5%; transform: rotate(-12deg); border-radius: 20px; }
+    .card1 .img2 { top: 20%; left: 45%; transform: rotate(8deg); border-radius: 20px;}
+    .card1 .img3 { top: 60%; left: 25%; transform: rotate(-5deg); border-radius: 20px;}
+    
+
+
+  
+.new-section {
+  /* Hauteur suffisante pour le scroll et les animations */
+  /* Ajustez si nécessaire en fonction de la durée des pins */
+  min-height: 300vh;
+  /* Couleur de fond */
+  background-color: #1a1a1a; /* Un peu différent pour la distinguer */
+  color: #fff;
+  /* Centrage du contenu pour le début */
+  display: flex;
+  justify-content: center;
+  align-items: flex-start; /* Aligner en haut pour le titre */
+  padding-top: 20vh; /* Espace au-dessus du titre */
+  overflow: hidden; /* Important pour éviter les débordements pendant les animations */
+  position: relative; /* Contexte de positionnement */
+}
+
+.new-container {
+  width: 90%;
+  max-width: 1100px; /* Largeur max */
+  margin: 0 auto;
+  text-align: center;
+  position: relative; /* Pour le positionnement des enfants */
+}
+
+#newHeading {
+  font-size: clamp(2.5rem, 6vw, 4.5rem); /* Taille responsive */
+  line-height: 1.2;
+  margin: 0 auto 15vh auto; /* Marge en bas pour laisser place à l'animation */
+  font-family: 'sfrprodisplay-medium', sans-serif; /* Utilisation de la police SF Pro */
+  font-weight: 600;
+  display: block; /* Assurez-vous qu'il prend toute la largeur */
+  /* Important pour l'animation lettre/mot */
+  overflow: hidden; /* Cache les lettres avant animation */
+}
+
+/* Style pour les spans du titre (pour l'animation) */
+#newHeading span {
+  display: inline-block; /* Permet transform */
+  opacity: 0; /* Initialement invisible */
+  transform: translateY(100%); /* Position initiale en bas */
+  margin-right: 0.2em; /* Petit espace entre les mots */
+}
+#newHeading span:last-child {
+  margin-right: 0;
+}
+
+
+.row {
+  display: flex;
+  justify-content: center; /* Centre les éléments horizontalement */
+  align-items: center; /* Centre les éléments verticalement */
+  gap: 2rem; /* Espace entre les éléments */
+  width: 100%;
+  margin-top: 5vh; /* Espace au-dessus de la rangée */
+  position: relative; /* Pour le positionnement absolu des cartes si nécessaire */
+  /* Initialement cachée */
+  opacity: 0;
+  transform: translateY(100px); /* Position initiale pour l'animation d'entrée */
+}
+
+.row .item {
+  /* Base commune pour l'image et les cartes */
+  opacity: 0; /* Caché initialement pour l'animation stagger */
+  transform: translateY(50px); /* Position initiale pour stagger */
+  transition: transform 0.5s cubic-bezier(0.68, -0.55, 0.27, 1.55); /* Transition pour hover */
+}
+
+.row .item:hover {
+    transform: translateY(-10px) scale(1.03); /* Effet de survol */
+}
+
+
+.row .image {
+  flex-shrink: 0; /* Empêche l'image de rétrécir */
+}
+
+.row .image img {
+  width: clamp(150px, 15vw, 200px); /* Taille responsive */
+  height: clamp(150px, 15vw, 200px);
+  border-radius: 50%; /* Image ronde */
+  object-fit: cover; /* Assure que l'image couvre bien */
+  border: 4px solid #444; /* Petite bordure */
+  box-shadow: 0 8px 25px rgba(0,0,0,0.4);
+}
+
+.row .card {
+  background: #282828; /* Fond légèrement plus clair */
+  padding: 1.5rem;
+  border-radius: 16px; /* Coins arrondis */
+  width: clamp(180px, 20vw, 240px); /* Largeur responsive */
+  text-align: left; /* Texte aligné à gauche dans les cartes */
+  box-shadow: 0 6px 18px rgba(0,0,0,0.3);
+  border: 1px solid #3a3a3a;
+  position: relative; /* Pour le positionnement du contenu */
+  overflow: hidden; /* Cache le contenu qui dépasse */
+  min-height: 180px; /* Hauteur minimale pour l'alignement */
+  display: flex;
+  flex-direction: column;
+  justify-content: center; /* Centre le contenu verticalement */
+}
+
+/* Optionnel: si vous voulez une petite image/logo dans la carte */
+.row .card .card-logo {
+  width: 60px; /* Ajustez la taille */
+  height: auto;
+  margin-bottom: 1rem;
+  opacity: 0.8;
+}
+
+
+.row .card h3 {
+  margin: 0 0 0.75rem 0; /* Espace sous le titre */
+  font-size: clamp(1.1rem, 1.8vw, 1.4rem); /* Taille responsive */
+  font-family: 'sfrprodisplay-medium', sans-serif;
+  color: #eee;
+  font-weight: 600;
+}
+
+.row .card p {
+  margin: 0;
+  font-size: clamp(0.85rem, 1.5vw, 1rem); /* Taille responsive */
+  color: #bbb; /* Couleur du texte plus douce */
+  font-family: 'Geist', sans-serif;
+  line-height: 1.4;
+}
+
+/* Inclinaisons pour les cartes et l'image */
+.tilt-img { transform: rotate(-4deg); }
+.tilt1 { transform: rotate(5deg); }
+.tilt2 { transform: rotate(-6deg); }
+.tilt3 { transform: rotate(4deg); }
+
+/* Styles pour le survol des éléments inclinés (réinitialise l'inclinaison et ajoute un scale) */
+.row .item.tilt-img:hover,
+.row .item.tilt1:hover,
+.row .item.tilt2:hover,
+.row .item.tilt3:hover {
+    transform: translateY(-10px) scale(1.05) rotate(0deg); /* Réinitialise la rotation au survol */
+}
+
+
+  </style>
+</head>
+<body>
+  <!-- SECTION HERO -->
+  <div class="hero">
+    <div class="content">
+      <div class="line1" id="line1">
+        <span class="letter">U</span>
+        <span class="letter">N</span>
+        <span class="letter">D</span>
+        <span class="letter">E</span>
+      </div>
+      <div class="line2-wrapper">
+        <div class="line2-text" id="line2">
+          <span class="letter">F</span>
+          <span class="letter">I</span>
+          <span class="letter">N</span>
+          <span class="letter">E</span>
+          <span class="letter">D</span>
+          <span class="square"></span>
+        </div>
+        <div class="circle-wrapper">
+          <div class="circle-text-container" id="circleTextContainer">
+            <svg viewBox="0 0 300 300">
+              <defs>
+                <path id="circlePath" d="M150,150 m -100,0 a 100,100 0 1,1 200,0 a 100,100 0 1,1 -200,0"/>
+              </defs>
+              <text class="circle-text">
+                <textPath xlink:href="#circlePath">
+                  • Empower the world with apps • Empower the world with apps • Empower the world with apps •
+                </textPath>
+              </text>
+            </svg>
+          </div>
+        </div>
+      </div>
+      <div class="line3" id="line3">studio</div>
+    </div>
+  </div>
+  
+  <!-- Bouton pinned -->
+  <!--<div class="button-container">
+    <div class="button-inner">
+      <div class="button-image">
+        <img src="Capture d'écran 2025-04-09 à 14.38.52.png" alt="Image contact">
+      </div>
+      <div class="button-content">
+        <span>Nous contacter</span>
+        <svg viewBox="0 0 24 24" style="width: 20px; height: 20px; margin-left: 10px;">
+          <path fill="currentColor" d="M2.5 19.5l19-7-19-7v5.5l12 1.5-12 1.5z"/>
+        </svg>
+      </div>
+    </div>
+  </div> -->
+  
+  <!-- Section YOU CAN -->
+  <section class="you-can-section">
+    <div class="pinned-text">Des apps qui</div>
+    <div class="list-column">
+      <ul class="youcan-list" style="--count: 22">
+        <li style="--i: 0">inspirent.</li>
+        <li style="--i: 1">simplifient.</li>
+        <li style="--i: 2">connectent.</li>
+        <li style="--i: 3">révolutionnent.</li>
+        <li style="--i: 4">optimisent.</li>
+        <li style="--i: 5">automatisent.</li>
+        <li style="--i: 6">protègent.</li>
+        <li style="--i: 7">stimulent.</li>
+        <li style="--i: 8">transforment.</li>
+        <li style="--i: 9">dynamisent.</li>
+        <li style="--i: 10">facilitent.</li>
+        <li style="--i: 11">catalysent.</li>
+        <li style="--i: 12">modernisent.</li>
+        <li style="--i: 13">accélèrent.</li>
+        <li style="--i: 14">renforcent.</li>
+        <li style="--i: 15">fluidifient.</li>
+        <li style="--i: 16">harmonisent.</li>
+        <li style="--i: 17">bousculent.</li>
+        <li style="--i: 18">innovent.</li>
+        <li style="--i: 19">valorisent.</li>
+        <li style="--i: 20">libèrent.</li>
+        <li style="--i: 21">unissent.</li>
+      </ul>
+    </div>
+  </section>
+  
+  <!-- Section Cards -->
+  <section class="cards-section">
+    <div class="cards-container">
+
+      <!-- CARD 1 -->
+      <div class="card card1">
+        <div class="card-left">
+          <div>
+            <h2 class="card-title">Titre 1</h2>
+            <p class="card-subtitle">Sous-titre explicatif 1</p>
+          </div>
+          <div>
+            <!-- bouton Google Play -->
+            <a class="playstore-button" href="#">
+              <svg xmlns="http://www.w3.org/2000/svg" fill="currentColor" class="icon" viewBox="0 0 512 512">
+                <path d="M99.617 8.057a50.191 50.191 0 00-38.815-6.713l230.932 230.933 74.846-74.846L99.617 8.057zM32.139 20.116c-6.441 8.563-10.148 19.077-10.148 30.199v411.358c0 11.123 3.708 21.636 10.148 30.199l235.877-235.877L32.139 20.116zM464.261 212.087l-67.266-37.637-81.544 81.544 81.548 81.548 67.273-37.64c16.117-9.03 25.738-25.442 25.738-43.908s-9.621-34.877-25.749-43.907zM291.733 279.711L60.815 510.629c3.786.891 7.639 1.371 11.492 1.371a50.275 50.275 0 0027.31-8.07l266.965-149.372-74.849-74.847z"/>
+              </svg>
+              <span class="texts">
+                <span class="text-1">GET IT ON</span>
+                <span class="text-2">Google Play</span>
+              </span>
+            </a>
+            <!-- bouton App Store -->
+            <a class="appstore-button" href="#">
+              <!-- remplacez ce SVG par un logo Apple si vous en avez -->
+              <svg xmlns="http://www.w3.org/2000/svg" fill="currentColor" class="icon" viewBox="0 0 384 512">
+                <path d="M318.7 268.7c-.2-36.4 16.2-63.9 51.3-83.7-19.1-27.9-47.3-43.7-83-44.3-34.9-.7-62.5 20.3-78.8 20.3-16.5 0-42.5-19.9-69.9-19.3-35.9.7-69.1 21-87.6 53.4-37.6 64.8-9.6 161.4 27 214.3 18 26.1 39.4 55.3 67.5 54.2 27.1-1.1 37.4-17.6 70-17.6 32.4 0 41.6 17.6 69.9 17.1 28-.5 45.7-26.7 63.4-52.9 19.9-29 28.2-57.2 28.4-58.7-.6-.2-54.2-20.9-54.4-82zM256.9 69c14.1-17.2 25.1-41.4 22.3-65.4-21.6 1-47.7 14.4-62.8 31.6-13.9 16.2-26 41.2-22.7 65.3 24.2 2 .48-15 63.2-31.5z"/>
+              </svg>
+              <span class="texts">
+                <span class="text-1">Download on the</span>
+                <span class="text-2">App Store</span>
+              </span>
+            </a>
+          </div>
+        </div>
+        <div class="card-right" style="position:relative;">
+          <img src="assets/card-illustration/WhatsApp Image 2025-04-22 at 16.51.17.jpeg" class="scatter-img img1" alt="">
+          <img src="assets/card-illustration/WhatsApp Image 2025-04-22 at 16.51.17.jpeg" class="scatter-img img2" alt="">
+          <img src="assets/card-illustration/logo-vago.png" class="scatter-img img3" alt="">
+        </div>
+        
+      </div>
+
+      <!-- CARD 2 -->
+      <div class="card card2">
+        <div class="card-left">
+          <div>
+            <h2 class="card-title">Titre 1</h2>
+            <p class="card-subtitle">Sous-titre explicatif 1</p>
+          </div>
+          <div>
+            <!-- bouton Google Play -->
+            <a class="playstore-button" href="#">
+              <svg xmlns="http://www.w3.org/2000/svg" fill="currentColor" class="icon" viewBox="0 0 512 512">
+                <path d="M99.617 8.057a50.191 50.191 0 00-38.815-6.713l230.932 230.933 74.846-74.846L99.617 8.057zM32.139 20.116c-6.441 8.563-10.148 19.077-10.148 30.199v411.358c0 11.123 3.708 21.636 10.148 30.199l235.877-235.877L32.139 20.116zM464.261 212.087l-67.266-37.637-81.544 81.544 81.548 81.548 67.273-37.64c16.117-9.03 25.738-25.442 25.738-43.908s-9.621-34.877-25.749-43.907zM291.733 279.711L60.815 510.629c3.786.891 7.639 1.371 11.492 1.371a50.275 50.275 0 0027.31-8.07l266.965-149.372-74.849-74.847z"/>
+              </svg>
+              <span class="texts">
+                <span class="text-1">Coming soon on </span>
+                <span class="text-2">Google Play</span>
+              </span>
+            </a>
+            <!-- bouton App Store -->
+            <a class="appstore-button" href="#">
+              <!-- remplacez ce SVG par un logo Apple si vous en avez -->
+              <svg xmlns="http://www.w3.org/2000/svg" fill="currentColor" class="icon" viewBox="0 0 384 512">
+                <path d="M318.7 268.7c-.2-36.4 16.2-63.9 51.3-83.7-19.1-27.9-47.3-43.7-83-44.3-34.9-.7-62.5 20.3-78.8 20.3-16.5 0-42.5-19.9-69.9-19.3-35.9.7-69.1 21-87.6 53.4-37.6 64.8-9.6 161.4 27 214.3 18 26.1 39.4 55.3 67.5 54.2 27.1-1.1 37.4-17.6 70-17.6 32.4 0 41.6 17.6 69.9 17.1 28-.5 45.7-26.7 63.4-52.9 19.9-29 28.2-57.2 28.4-58.7-.6-.2-54.2-20.9-54.4-82zM256.9 69c14.1-17.2 25.1-41.4 22.3-65.4-21.6 1-47.7 14.4-62.8 31.6-13.9 16.2-26 41.2-22.7 65.3 24.2 2 .48-15 63.2-31.5z"/>
+              </svg>
+              <span class="texts">
+                <span class="text-1">Coming soon on</span>
+                <span class="text-2">App Store</span>
+              </span>
+            </a>
+          </div>
+        </div>
+        <div class="card-right">
+          <video src="Blue Modern New App Promotion Business Animated Instagram Reel .mp4" autoplay muted loop></video>
+        </div>
+        
+      </div>
+
+      <!-- CARD 3 -->
+      <div class="card card3">
+        <div class="card-left">
+          <h2 class="card-title">Titre 3</h2>
+          <p class="card-subtitle">Sous-titre explicatif 3</p>
+        </div>
+        <div class="card-right">
+          <img src="image3.jpg" alt="Image de la carte 3">
+        </div>
+      </div>
+
+    </div>
+  </section>
+  
+  
+
+  
+  <script>
+    window.addEventListener("load", function() {
+      // Nettoyer tous les anciens ScrollTriggers
+      ScrollTrigger.getAll().forEach(trigger => trigger.kill());
+      
+      // --- Animation d'intro de la section hero ---
+      const tlIntro = gsap.timeline();
+      const line1Letters = document.querySelectorAll("#line1 .letter");
+      tlIntro.to(line1Letters, { duration: 0.8, opacity: 1, y: 0, stagger: 0.1, ease: "power2.out" });
+      const line2Letters = document.querySelectorAll("#line2 .letter");
+      tlIntro.to(line2Letters, { duration: 0.8, opacity: 1, y: 0, stagger: 0.1, ease: "power2.out" }, "-=0.3");
+      const square = document.querySelector("#line2 .square");
+      tlIntro.to(square, {
+        duration: 0.6,
+        opacity: 1,
+        scale: 1,
+        ease: "bounce.out",
+        onComplete: function() {
+          gsap.to(document.body, { duration: 2, background: "none", ease: "power2.inOut" });
+        }
+      }, "-=0.3");
+      tlIntro.from("#line3", { duration: 0.8, opacity: 0, y: 30, ease: "power2.out" }, "-=0.4");
+      gsap.to("#circleTextContainer", { rotation: 360, duration: 20, ease: "none", repeat: -1 });
+      
+      const circleContainer = document.getElementById("circleTextContainer");
+      circleContainer.addEventListener("mouseenter", function() {
+        gsap.to("#circleTextContainer svg", { duration: 0.5, scale: 1.1, ease: "power2.out" });
+      });
+      circleContainer.addEventListener("mouseleave", function() {
+        gsap.to("#circleTextContainer svg", { duration: 0.5, scale: 1, ease: "power2.out" });
+      });
+      
+      // --- Timeline de scroll pour la section hero ---
+      gsap.registerPlugin(ScrollTrigger);
+      gsap.timeline({
+        scrollTrigger: {
+          trigger: ".hero",
+          start: "top top",
+          end: "bottom+=140%",
+          scrub: true,
+          pin: true,
+          pinSpacing: true,
+          invalidateOnRefresh: true
+        }
+      })
+      .to("#line1", { y: -150, opacity: 0, ease: "power2.in" }, 0)
+      .to("#line2", { x: -150, opacity: 0, ease: "power2.in" }, 0)
+      .to(".circle-wrapper", { x: 150, opacity: 0, ease: "power2.in" }, 0)
+      .fromTo("#line3", { y: 0, opacity: 1 }, { y: 100, opacity: 0, ease: "power2.in", immediateRender: false }, 0);
+      
+      // --- ScrollTrigger pour le bouton ---
+      ScrollTrigger.create({
+        trigger: ".hero",
+        start: "bottom top",
+        onEnter: function() {
+          gsap.to(".button-image", { width: "185px", duration: 0.5, ease: "power2.out" });
+          gsap.to(".button-content", { padding: "10px 5px", duration: 0.5, ease: "power2.out" });
+          gsap.to(".button-content svg", { marginLeft: "5px", duration: 0.5, ease: "power2.out" });
+          document.querySelector(".button-content span").textContent = "Plus";
+        },
+        onLeaveBack: function() {
+          gsap.to(".button-image", { width: "0px", duration: 0.5, ease: "power2.out" });
+          gsap.to(".button-content", { padding: "10px 15px", duration: 0.5, ease: "power2.out" });
+          gsap.to(".button-content svg", { marginLeft: "10px", duration: 0.5, ease: "power2.out" });
+          document.querySelector(".button-content span").textContent = "Nous contacter";
+        }
+      });
+      
+      // --- ScrollTrigger pour la section YOU CAN ---
+      // Pin le texte "Des apps qui" au centre pendant le scroll de la section YOU CAN.
+      ScrollTrigger.create({
+        trigger: ".you-can-section",
+        start: "center center",
+        end: "bottom center",
+        pin: ".pinned-text",
+        pinSpacing: false,
+      });
+      
+      // Pour chaque élément de la liste de la section YOU CAN.
+      gsap.utils.toArray(".youcan-list li").forEach(li => {
+        ScrollTrigger.create({
+          trigger: li,
+          start: "top center",
+          end: "bottom center",
+          toggleActions: "play none reverse none",
+          onEnter: () => gsap.to(li, { opacity: 1, filter: "brightness(1.5)", duration: 0.3 }),
+          onLeave: () => gsap.to(li, { opacity: 0.2, filter: "brightness(1)", duration: 0.3 }),
+          onEnterBack: () => gsap.to(li, { opacity: 1, filter: "brightness(1.5)", duration: 0.3 }),
+          onLeaveBack: () => gsap.to(li, { opacity: 0.2, filter: "brightness(1)", duration: 0.3 })
+        });
+      });
+      
+     
+     
+     
+     
+     
+      // --- ScrollTrigger pour la section Cards ---
+      gsap.timeline({
+        scrollTrigger: {
+          trigger: ".cards-section",
+          start: "top top",
+          end: "+=1500", // Ajustez selon la durée du scroll désirée
+          scrub: true,
+          pin: true,
+          invalidateOnRefresh: true,
+          markers: false
+        }
+      })
+      // Première carte : glisse de 150px en dessous à sa position finale (0)
+      .fromTo(".cards-container .card:nth-child(1)",
+        { y: 150, opacity: 1 },
+        { y: -20, opacity: 1, ease: "power2.out" }
+      )
+      // Deuxième carte : glisse de 150px en dessous à y = -50 pour un léger empilement
+      .fromTo(".cards-container .card:nth-child(2)",
+        { y: 150, opacity: 1 },
+        { y: -690, opacity: 1, ease: "power2.out" }, "<0.4"
+      )
+      // Troisième carte : glisse de 150px en dessous à y = -100
+      .fromTo(".cards-container .card:nth-child(3)",
+        { y: 150, opacity: 1 },
+        { y: -1360, opacity: 1, ease: "power2.out" }, "<0.4"
+      );
+      
+    }, { once: true });
+  </script>
+
+
+<script>// --- Animations pour la Nouvelle Section ---
+
+  // Sélection des éléments
+  const newSection = document.querySelector('.new-section');
+  const newHeading = document.querySelector('#newHeading');
+  const newHeadingSpans = newHeading.querySelectorAll('span');
+  const rowElementsContainer = document.querySelector('.new-section .row');
+  const rowItems = document.querySelectorAll('.new-section .row .item'); // Sélectionne l'image et les 3 cartes
+  
+  // 1. Animation d'entrée du Titre
+  const tlHeading = gsap.timeline({
+    scrollTrigger: {
+      trigger: newSection,
+      start: "top 70%", // Démarre quand le haut de la section est à 70% du viewport
+      end: "top 30%", // Termine quand le haut de la section est à 30%
+      // markers: true, // Décommentez pour le débogage
+      toggleActions: "play none none reverse", // Joue à l'entrée, revient en arrière à la sortie
+    }
+  });
+  
+  tlHeading.to(newHeadingSpans, {
+    opacity: 1,
+    y: 0,
+    stagger: 0.1, // Délai entre chaque mot
+    duration: 0.8,
+    ease: "power2.out" // Une accélération douce
+  });
+  
+  // 2. Pinning du Titre et Scroll vers le haut
+  ScrollTrigger.create({
+    trigger: newHeading,
+    start: "top 30%", // Commence à pinner quand le haut du titre atteint 30% du viewport
+    endTrigger: rowElementsContainer, // Le pin dure jusqu'à ce que le conteneur de la rangée commence
+    end: "top 80%", // Se termine quand le haut de la rangée atteint 80% (laisse de l'espace)
+    pin: newHeading, // Élément à pinner
+    pinSpacing: false, // Ne pas ajouter d'espace après le pin
+    // markers: {startColor: "blue", endColor: "blue"}, // Décommentez pour le débogage
+  });
+  
+  // 3. Animation d'entrée et Pinning de la rangée (Image + Cartes)
+  const tlRow = gsap.timeline({
+    scrollTrigger: {
+      trigger: rowElementsContainer,
+      start: "top center", // Démarre quand le haut de la rangée atteint le centre
+      end: "+=100%", // Pinner pendant une hauteur équivalente à 100% du viewport
+      scrub: 0.5, // Lissage du scroll
+      pin: rowElementsContainer, // Pinner la rangée entière
+      pinSpacing: true, // Ajouter de l'espace pour le contenu suivant
+      invalidateOnRefresh: true, // Recalculer au redimensionnement
+      // markers: {startColor: "red", endColor: "red"}, // Décommentez pour le débogage
+    }
+  });
+  
+  // Animation d'entrée de la rangée (fade in + léger slide up)
+  tlRow.to(rowElementsContainer, {
+    opacity: 1,
+    y: 0, // Position finale
+    duration: 0.5,
+    ease: "power1.out"
+  }, 0); // Temps 0 de la timeline tlRow
+  
+  // Animation d'entrée STAGGERED pour les items (image + cartes) avec effet bounce
+  tlRow.to(rowItems, {
+    opacity: 1,
+    y: 0, // Position finale
+    stagger: 0.15, // Délai entre chaque item
+    duration: 0.8,
+    ease: "back.out(1.7)", // Effet de rebond
+  }, 0.2); // Commence légèrement après l'apparition du conteneur
+  
+  // Optionnel: Ajouter une légère animation pendant le pin (subtil parallax ou autre)
+  // tlRow.to(rowItems, { y: -20, stagger: 0.05, ease: "none" }, 0); // Exemple: léger décalage vers le haut pendant le scroll
+  
+  
+  // Assurez-vous que ScrollTrigger se rafraîchit après le chargement de tout
+  ScrollTrigger.refresh();
+  
+  </script>
+</body>
+</html>
