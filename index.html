@@ -3,703 +3,1681 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
-  <title>Nouvelle Maquette - Studio</title>
+  <title>Undefined Studio - Ultra Poussé</title>
   
   <!-- GSAP CDN -->
   <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.1/gsap.min.js"></script>
-  <!-- ScrollTrigger CDN -->
   <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.1/ScrollTrigger.min.js"></script>
   
   <style>
-    /* ----- IMPORTS ET GRID BACKGROUND ----- */
-    @import url('https://unpkg.com/normalize.css') layer(normalize);
+    @import url('https://unpkg.com/normalize.css');
     @import url('https://fonts.googleapis.com/css2?family=Geist:wght@100..900&display=swap');
+    @import url('https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@300;400;500;600;700&display=swap');
     
-    /* Définir les layers (pour organiser les styles) */
-    @layer normalize, base, demo, stick, effect, scrollbar, debug;
-    
-    @font-face {
-      font-family: 'NullFree';
-      src: url('assets/fonts/nullfree/Null_Free.otf') format('opentype');
-      font-weight: normal;
-      font-style: normal;
+    /* Variables globales */
+    :root {
+      --main-bg: #000000;
+      --text-white: #ffffff;
+      --text-gray: #cccccc;
+      --border-gray: #333333;
+      --card-bg: #171717;
+      --accent-green: #00ff88;
+      --blue-gradient: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+      /* Nouveau système de couleurs inspiré du loader */
+      --rainbow-gradient: linear-gradient(45deg, #00ff88, #00ccff, #ff6b6b, #ffa726, #ab47bc);
+      --rainbow-glow: 0 0 40px rgba(0,255,136,0.4), 0 0 80px rgba(0,204,255,0.3), 0 0 120px rgba(255,107,107,0.2);
+      --card-bg-modern: linear-gradient(135deg, rgba(23,23,23,0.95) 0%, rgba(40,40,40,0.9) 100%);
     }
     
+    /* Reset et base */
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+    
+    html {
+      scroll-behavior: smooth;
+    }
+    
+    body {
+      font-family: 'Space Grotesk', Arial, sans-serif;
+      background: var(--main-bg);
+      color: var(--text-white);
+      overflow-x: hidden;
+      line-height: 1.4;
+      transition: background 0.8s cubic-bezier(0.4, 0, 0.2, 1);
+    }
+    
+    /* Loading Screen Ultra Modern */
+    .loading-screen {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      background: radial-gradient(ellipse at center, #111111 0%, #000000 100%);
+      z-index: 9999;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      opacity: 1;
+      transition: opacity 0.8s ease-out;
+      overflow: hidden;
+    }
+    
+    .loading-screen::before {
+      content: '';
+      position: absolute;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      background: 
+        linear-gradient(90deg, rgba(0,255,136,0.05) 1px, transparent 1px),
+        linear-gradient(rgba(0,255,136,0.05) 1px, transparent 1px);
+      background-size: 50px 50px;
+      animation: gridMove 20s linear infinite;
+      opacity: 0.6;
+    }
+    
+    @keyframes gridMove {
+      0% { transform: translate(0, 0); }
+      100% { transform: translate(50px, 50px); }
+    }
+    
+    .loading-container {
+      text-align: center;
+      position: relative;
+      z-index: 2;
+    }
+    
+    .loading-logo {
+      font-family: 'Space Grotesk', sans-serif;
+      font-size: clamp(4rem, 10vw, 8rem);
+      font-weight: 900;
+      color: var(--text-white);
+      margin-bottom: 4rem;
+      letter-spacing: 0.3em;
+      position: relative;
+    }
+    
+    .loading-letter {
+      display: inline-block;
+      opacity: 0;
+      transform: translateY(100px) rotateX(90deg);
+      animation: modernLetterReveal 2s ease-out infinite;
+      text-shadow: 0 0 20px rgba(0,255,136,0.3);
+      position: relative;
+    }
+    
+    .loading-letter::after {
+      content: attr(data-letter);
+      position: absolute;
+      top: 0;
+      left: 0;
+      color: var(--accent-green);
+      opacity: 0;
+      animation: glowReveal 2s ease-out infinite;
+    }
+    
+    .loading-letter:nth-child(1) { animation-delay: 0s; }
+    .loading-letter:nth-child(2) { animation-delay: 0.1s; }
+    .loading-letter:nth-child(3) { animation-delay: 0.2s; }
+    .loading-letter:nth-child(4) { animation-delay: 0.3s; }
+    .loading-letter:nth-child(5) { animation-delay: 0.4s; }
+    .loading-letter:nth-child(6) { animation-delay: 0.5s; }
+    .loading-letter:nth-child(7) { animation-delay: 0.6s; }
+    .loading-letter:nth-child(8) { animation-delay: 0.7s; }
+    .loading-letter:nth-child(9) { animation-delay: 0.8s; }
+    
+    @keyframes modernLetterReveal {
+      0% { 
+        opacity: 0; 
+        transform: translateY(100px) rotateX(90deg); 
+      }
+      25% { 
+        opacity: 1; 
+        transform: translateY(0) rotateX(0deg); 
+      }
+      75% { 
+        opacity: 1; 
+        transform: translateY(0) rotateX(0deg); 
+      }
+      100% { 
+        opacity: 0.7; 
+        transform: translateY(-20px) rotateX(-15deg); 
+      }
+    }
+    
+    @keyframes glowReveal {
+      0%, 25% { opacity: 0; }
+      50% { opacity: 0.8; }
+      75%, 100% { opacity: 0; }
+    }
+    
+    .loading-progress-container {
+      position: relative;
+      width: 400px;
+      height: 60px;
+      margin: 0 auto 3rem;
+      border: 2px solid rgba(255,255,255,0.1);
+      border-radius: 30px;
+      overflow: hidden;
+      background: rgba(0,0,0,0.5);
+      backdrop-filter: blur(10px);
+    }
+    
+    .loading-progress {
+      height: 100%;
+      background: linear-gradient(45deg, var(--accent-green), #00ccff, #ff6b6b);
+      background-size: 300% 100%;
+      border-radius: 28px;
+      width: 0%;
+      transition: width 0.5s cubic-bezier(0.4, 0, 0.2, 1);
+      animation: progressGlow 3s ease-in-out infinite;
+      position: relative;
+    }
+    
+    .loading-progress::after {
+      content: '';
+      position: absolute;
+      top: 0;
+      left: 0;
+      right: 0;
+      bottom: 0;
+      background: linear-gradient(90deg, transparent, rgba(255,255,255,0.3), transparent);
+      animation: progressShine 2s ease-in-out infinite;
+    }
+    
+    @keyframes progressGlow {
+      0%, 100% { background-position: 0% 50%; }
+      50% { background-position: 100% 50%; }
+    }
+    
+    @keyframes progressShine {
+      0% { transform: translateX(-100%); }
+      100% { transform: translateX(300%); }
+    }
+    
+    .loading-text {
+      font-family: 'Space Grotesk', sans-serif;
+      color: rgba(255,255,255,0.8);
+      font-size: 1.2rem;
+      font-weight: 400;
+      margin-top: 2rem;
+      opacity: 0;
+      animation: textFadeIn 1s ease-out 0.5s forwards;
+    }
+    
+    @keyframes textFadeIn {
+      0% { opacity: 0; transform: translateY(20px); }
+      100% { opacity: 1; transform: translateY(0); }
+    }
+    
+    .loading-screen.hidden {
+      opacity: 0;
+      pointer-events: none;
+    }
 
-    @font-face {
-      font-family: 'sfrprodisplay-medium';
-      src: url('assets/fonts/sfprodisplay/SFPRODISPLAYBOLD.OTF') format('opentype');
-      font-weight: normal;
-      font-style: normal;
-    }
-    @layer debug {
-      [data-debug='true'] li {
-        outline: 0.05em dashed currentColor;
-      }
-      [data-debug='true'] :is(h2, li:last-of-type) {
-        outline: 0.05em dashed canvasText;
-      }
+    /* Background dynamique */
+    .dynamic-bg {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      z-index: -1;
+      background: var(--main-bg);
+      transition: all 1.5s cubic-bezier(0.4, 0, 0.2, 1);
     }
     
-    @layer scrollbar {
-      @property --hue {
-        initial-value: 0;
-        syntax: '<number>';
-        inherits: false;
-      }
-      @property --chroma {
-        initial-value: 0;
-        syntax: '<number>';
-        inherits: true;
-      }
-    
-      [data-sync-scrollbar='true'] {
-        scrollbar-color: oklch(var(--lightness) var(--chroma) var(--hue)) #0000;
-      }
-      @supports (animation-timeline: scroll()) and (animation-range: 0% 100%) {
-        [data-sync-scrollbar='true'][data-animate='true'] {
-          timeline-scope: --list;
-          scrollbar-color: oklch(var(--lightness) var(--chroma, 0) var(--hue)) #0000;
-          animation-name: change, chroma-on, chroma-off;
-          animation-fill-mode: both;
-          animation-timing-function: linear;
-          animation-range: entry 50% exit 50%, entry 40% entry 50%, exit 30% exit 40%;
-          animation-timeline: --list;
-          ul { view-timeline: --list; }
-        }
-      }
-    
-      @keyframes change {
-        to { --hue: var(--end); }
-      }
-      @keyframes chroma-on { to { --chroma: 0.3; } }
-      @keyframes chroma-off { to { --chroma: 0; } }
+    /* Grille de fond */
+    .grid-bg {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100vw;
+      height: 100vh;
+      background: 
+        linear-gradient(90deg, rgba(255,255,255,0.04) 1px, transparent 1px),
+        linear-gradient(rgba(255,255,255,0.04) 1px, transparent 1px);
+      background-size: 60px 60px;
+      mask: linear-gradient(-25deg, transparent 40%, white 70%);
+      pointer-events: none;
+      z-index: 0;
+      opacity: 0.7;
     }
     
-    @layer effect {
-      :root {
-        --start: 0;
-        --end: 360;
-        --lightness: 65%;
-        --base-chroma: 0.3;
-      }
-      [data-theme='dark'] { --lightness: 75%; }
-      [data-theme='light'] { --lightness: 65%; }
-      @media (prefers-color-scheme: dark) { --lightness: 75%; }
-      ul { --step: calc((var(--end) - var(--start)) / (var(--count) - 1)); }
-      li:not(:last-of-type) {
-        color: oklch(var(--lightness) var(--base-chroma) calc(var(--start) + (var(--step) * var(--i))));
-      }
-    
-      @supports (animation-timeline: scroll()) and (animation-range: 0% 100%) {
-        [data-animate='true'] {
-          li {
-            opacity: 0.2;
-            animation-name: brighten;
-            &:first-of-type { --start-opacity: 1; }
-            &:last-of-type { --brightness: 1; --end-opacity: 1; }
-            animation-fill-mode: both;
-            animation-timing-function: linear;
-            animation-range: cover calc(50% - 1lh) calc(50% + 1lh);
-            animation-timeline: view();
-          }
-        }
-    
-        @keyframes brighten {
-          0% { opacity: var(--start-opacity, 0.2); }
-          50% { opacity: 1; filter: brightness(var(--brightness, 1.2)); }
-          100% { opacity: var(--end-opacity, 0.2); }
-        }
-      }
-    }
-    
-    @layer stick {
-      section:first-of-type {
-        --font-level: 6;
-        display: flex;
-        line-height: 1.25;
-        width: 100%;
-        padding-left: 5rem;
-      }
-      section:last-of-type {
-        min-height: 100vh;
-        display: flex;
-        place-items: center;
-        width: 100%;
-        justify-content: center;
-        h2 { --font-level: 6; }
-      }
-      main { width: 100%; }
-      section:first-of-type h2 {
-        position: sticky;
-        top: calc(50% - 0.5lh);
-        font-size: inherit;
-        margin: 0;
-        display: inline-block;
-        height: fit-content;
-        font-weight: 600;
-      }
-      ul {
-        font-weight: 600;
-        padding-inline: 0;
-        margin: 0;
-        list-style-type: none;
-      }
-      [data-snap='true'] {
-        scroll-snap-type: y proximity;
-        li { scroll-snap-align: center; }
-      }
-      h2,
-      li:last-of-type {
-        background: linear-gradient(canvasText 50%, color-mix(in oklch, canvas, canvasText 25%));
-        background-clip: text;
-        color: #0000;
-      }
-    }
-    
-    @layer demo {
-      header {
-        min-height: 100vh;
-        display: flex;
-        place-items: center;
-        width: 100%;
-        padding-inline: 5rem;
-      }
-      footer { padding-block: 2rem; opacity: 0.5; }
-      h1 {
-        --font-size-min: 24;
-        --font-level: 8;
-        text-wrap: pretty;
-        line-height: 0.8;
-        margin: 0;
-        background: linear-gradient(canvasText 60%, color-mix(in oklch, canvas, canvasText));
-        background-clip: text;
-        color: #0000;
-      }
-    }
-    
-    @layer base {
-      :root {
-        --font-size-min: 14;
-        --font-size-max: 20;
-        --font-ratio-min: 1.1;
-        --font-ratio-max: 1.33;
-        --font-width-min: 375;
-        --font-width-max: 1500;
-      }
-      html { color-scheme: light dark; }
-      [data-theme='light'] { color-scheme: light only; }
-      [data-theme='dark'] { color-scheme: dark only; }
-      :where(.fluid) {
-        --fluid-min: calc(var(--font-size-min) * pow(var(--font-ratio-min), var(--font-level, 0)));
-        --fluid-max: calc(var(--font-size-max) * pow(var(--font-ratio-max), var(--font-level, 0)));
-        --fluid-preferred: calc((var(--fluid-max) - var(--fluid-min)) / (var(--font-width-max) - var(--font-width-min)));
-        --fluid-type: clamp(
-          (var(--fluid-min) / 16) * 1rem,
-          ((var(--fluid-min) / 16) * 1rem) -
-            (((var(--fluid-preferred) * var(--font-width-min)) / 16) * 1rem) +
-            (var(--fluid-preferred) * var(--variable-unit, 100vi)),
-          (var(--fluid-max) / 16) * 1rem
-        );
-        font-size: var(--fluid-type);
-      }
-      *,
-      *::after,
-      *::before { box-sizing: border-box; }
-      body {
-        display: grid;
-        place-items: center;
-        background: light-dark(white, black);
-        min-height: 100vh;
-        font-family: 'NullFree', sans-serif;
-      }
-      /* Grille de fond */
-      body::before {
-        --size: 45px;
-        --line: color-mix(in hsl, canvasText, transparent 70%);
-        content: '';
-        height: 100vh;
-        width: 100vw;
-        position: fixed;
-        background:
-          linear-gradient(90deg, var(--line) 1px, transparent 1px var(--size)) 50% 50% / var(--size) var(--size),
-          linear-gradient(var(--line) 1px, transparent 1px var(--size)) 50% 50% / var(--size) var(--size);
-        mask: linear-gradient(-20deg, transparent 50%, white);
-        top: 0;
-        transform-style: flat;
-        pointer-events: none;
-        z-index: -1;
-      }
-    
-      .bear-link {
-        color: canvasText;
-        position: fixed;
-        top: 1rem;
-        left: 1rem;
-        width: 48px;
-        aspect-ratio: 1;
-        display: grid;
-        place-items: center;
-        opacity: 0.8;
-      }
-      :where(.x-link, .bear-link):is(:hover, :focus-visible) { opacity: 1; }
-      .bear-link svg { width: 75%; }
-      .sr-only {
-        position: absolute;
-        width: 1px;
-        height: 1px;
-        padding: 0;
-        margin: -1px;
-        overflow: hidden;
-        clip: rect(0, 0, 0, 0);
-        white-space: nowrap;
-        border-width: 0;
-      }
-    }
-    
-    /* ----- Code spécifique au projet (NE PAS MODIFIER la mise en page existante) ----- */
-    
+    /* Section Hero Ultra - Responsive Optimisé */
     .hero {
       position: relative;
       width: 100%;
       height: 100vh;
+      display: flex;
+      flex-direction: column;
+      justify-content: space-between;
+      padding: 3vh 2% 3vh 2%;
       overflow: hidden;
-      pointer-events: none;
+      z-index: 1;
     }
-    .content {
+    
+    .hero-content {
+      text-align: left;
+      width: 100%;
+      height: 100%;
+      display: flex;
+      flex-direction: column;
+      justify-content: space-between;
+      position: relative;
+    }
+    
+    .line1 {
+      font-family: 'Space Grotesk', sans-serif;
+      font-size: clamp(6rem, 25vw, 28rem);
+      font-weight: 900;
+      color: var(--text-white);
+      line-height: 0.75;
+      margin: 0;
+      text-transform: uppercase;
+      letter-spacing: -0.08em;
+      text-shadow: 0 0 40px rgba(255,255,255,0.1);
+    }
+    
+    .line1 span {
+      display: inline-block;
+      opacity: 0;
+      transform: translateY(150px) rotateX(90deg);
+    }
+    
+    .line2-wrapper {
+      display: flex;
+      align-items: center;
+      justify-content: flex-start;
+      gap: clamp(1rem, 3vw, 3rem);
+      margin: 0;
+      position: relative;
+    }
+    
+    .line2-text {
+      font-family: 'Space Grotesk', sans-serif;
+      font-size: clamp(4rem, 18vw, 20rem);
+      font-weight: 900;
+      color: var(--text-white);
+      line-height: 0.75;
+      display: flex;
+      align-items: center;
+      gap: 0.25em;
+      text-transform: uppercase;
+      letter-spacing: -0.05em;
+    }
+    
+    .line2-text span.letter {
+      display: inline-block;
+      opacity: 0;
+      transform: translateY(150px) rotateX(90deg);
+    }
+    
+    .line2-text .square {
+      width: 0.2em;
+      height: 0.2em;
+      background: var(--rainbow-gradient);
+      background-size: 300% 100%;
+      animation: rainbowFlow 3s ease-in-out infinite;
+      opacity: 0;
+      transform: scale(0) rotate(45deg);
+      border-radius: 6px;
+      box-shadow: var(--rainbow-glow);
+      flex-shrink: 0;
+    }
+    
+    .circle-wrapper {
+      position: absolute;
+      right: 2%;
+      top: 50%;
+      transform: translateY(-50%);
+      width: clamp(180px, 20vw, 350px);
+      height: clamp(180px, 20vw, 350px);
+      opacity: 0;
+    }
+    
+    .circle-text-container {
+      width: 100%;
+      height: 100%;
+      position: relative;
+    }
+    
+    .circle-text-container::before {
+      content: '';
       position: absolute;
       top: 50%;
       left: 50%;
       transform: translate(-50%, -50%);
       width: 90%;
-      height: 98%;
-      text-align: left;
+      height: 90%;
+      border: 2px solid rgba(255,255,255,0.1);
+      border-radius: 50%;
+      background: radial-gradient(circle, rgba(0,255,136,0.1) 0%, transparent 70%);
     }
-    .line1 {
-      font-family: 'NullFree', sans-serif;
-      font-size: 25vw;
+    
+    .circle-text-container svg {
       width: 100%;
-      color: #fff;
-      line-height: 1;
+      height: 100%;
     }
-    .line1 span { display: inline-block; opacity: 0; transform: translateY(50px); }
-    .line2-wrapper {
+    
+    .circle-text {
+      font-family: 'Space Grotesk', sans-serif;
+      font-weight: 500;
+      font-size: clamp(0.8rem, 1.2vw, 1.4rem);
+      fill: var(--text-white);
+      opacity: 0.8;
+    }
+    
+    .line3 {
+      font-family: 'Space Grotesk', sans-serif;
+      font-size: clamp(3rem, 10vw, 10rem);
+      font-weight: 300;
+      color: var(--text-white);
+      line-height: 1;
+      opacity: 0;
+      margin: 0;
+      letter-spacing: 0.1em;
+      text-transform: lowercase;
+    }
+    
+    /* Responsive spécial pour écrans 15 pouces */
+    @media screen and (max-width: 1440px) and (max-height: 900px) {
+      .line1 {
+        font-size: clamp(5rem, 20vw, 22rem);
+      }
+      
+      .line2-text {
+        font-size: clamp(3.5rem, 15vw, 16rem);
+      }
+      
+      .line3 {
+        font-size: clamp(2.5rem, 8vw, 8rem);
+      }
+      
+      .circle-wrapper {
+        width: clamp(150px, 18vw, 280px);
+        height: clamp(150px, 18vw, 280px);
+        right: 3%;
+      }
+      
+      .hero {
+        padding: 2vh 3% 2vh 3%;
+      }
+    }
+    
+    /* Section YOU CAN Ultra avec scroll vertical */
+    .you-can-section {
+      position: relative;
+      height: 500vh;
+      background: transparent;
+      z-index: 2;
+    }
+    
+    .you-can-container {
+      position: sticky;
+      top: 0;
+      height: 100vh;
+      display: flex;
+      align-items: center;
+      padding: 0 5%;
+      overflow: hidden;
+      gap: 3rem;
+    }
+    
+    .pinned-text {
+      font-family: 'Space Grotesk', sans-serif;
+      font-size: clamp(3rem, 6vw, 8rem);
+      font-weight: 900;
+      color: var(--text-white);
+      text-transform: lowercase;
+      letter-spacing: -0.02em;
+      flex-shrink: 0;
+      z-index: 2;
+      display: flex;
+      align-items: center;
+      height: clamp(4rem, 8vw, 10rem);
+    }
+    
+    .words-container {
+      flex: 1;
+      height: 100vh;
+      position: relative;
+      overflow: hidden;
+      display: flex;
+      align-items: center;
+    }
+    
+    .scrolling-words-list {
+      position: absolute;
+      top: 42%;
+      left: 0;
+      width: 100%;
+      display: flex;
+      flex-direction: column;
+      transform: translateY(0);
+    }
+    
+    .word-item {
+      font-family: 'Space Grotesk', sans-serif;
+      font-size: clamp(3rem, 6vw, 8rem);
+      font-weight: 900;
+      color: rgba(255,255,255,0.2);
+      text-transform: lowercase;
+      letter-spacing: -0.02em;
+      transition: all 0.6s cubic-bezier(0.4, 0, 0.2, 1);
+      height: clamp(4rem, 8vw, 10rem);
+      display: flex;
+      align-items: center;
+      position: relative;
+    }
+    
+    .word-item.active {
+      color: transparent;
+      background: var(--rainbow-gradient);
+      background-size: 300% 100%;
+      background-clip: text;
+      -webkit-background-clip: text;
+      text-shadow: var(--rainbow-glow);
+      transform: scale(1.05);
+      transform-origin: left center;
+      animation: rainbowFlow 3s ease-in-out infinite;
+    }
+    
+    .word-item.visible {
+      color: rgba(255,255,255,0.6);
+    }
+    
+    @keyframes rainbowFlow {
+      0%, 100% { background-position: 0% 50%; }
+      50% { background-position: 100% 50%; }
+    }
+    
+    /* Section Motion Design */
+    .motion-section {
+      position: relative;
+      height: 100vh;
+      background: transparent;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      overflow: visible;
+      z-index: 3;
+      margin-bottom: 120vh; /* Beaucoup plus d'espace après motion design */
+    }
+    
+    .motion-container {
+      position: relative;
+      width: 100%;
+      height: 100%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      overflow: visible;
+    }
+    
+    .slogan {
+      font-family: 'Space Grotesk', sans-serif;
+      font-size: clamp(3rem, 8vw, 10rem);
+      font-weight: 900;
+      color: var(--text-white);
+      text-align: center;
+      z-index: 10;
+      opacity: 0;
+      text-transform: lowercase;
+      letter-spacing: -0.03em;
+      line-height: 0.9;
+      position: relative;
+    }
+    
+    .slogan-line {
+      display: block;
+      overflow: hidden;
+      position: relative;
+    }
+    
+    .slogan-word {
+      display: inline-block;
+      transform: translateY(100%) rotateX(90deg);
+      opacity: 0;
+      transition: all 0.8s cubic-bezier(0.4, 0, 0.2, 1);
+    }
+    
+    .slogan-word.animate {
+      transform: translateY(0) rotateX(0deg);
+      opacity: 1;
+    }
+    
+    .slogan-word.special {
+      background: var(--rainbow-gradient);
+      background-size: 300% 100%;
+      background-clip: text;
+      -webkit-background-clip: text;
+      color: transparent;
+      animation: rainbowFlow 4s ease-in-out infinite;
+    }
+    
+    .floating-shapes {
+      position: absolute;
+      top: -10%;
+      left: -10%;
+      width: 120%;
+      height: 120%;
+      pointer-events: none;
+      overflow: visible;
+    }
+    
+    .shape {
+      position: absolute;
+      border-radius: 25px;
+      background: linear-gradient(135deg, #00ff88, #00cc6a);
+      opacity: 0;
+      border: 6px solid #000;
+      box-shadow: 
+        0 15px 40px rgba(0,0,0,0.6),
+        inset 0 4px 8px rgba(255,255,255,0.25),
+        0 0 0 2px rgba(255,255,255,0.1);
+      cursor: pointer;
+      z-index: 1;
+      backdrop-filter: blur(2px);
+    }
+    
+    .shape.circle {
+      border-radius: 50%;
+      background: linear-gradient(135deg, #ff6b6b, #ff4757);
+    }
+    
+    .shape.square {
+      border-radius: 15px;
+      background: linear-gradient(135deg, #ffa726, #ff9800);
+    }
+    
+    .shape.triangle {
+      border-radius: 15px;
+      background: linear-gradient(135deg, #42a5f5, #1e88e5);
+      clip-path: polygon(50% 10%, 10% 90%, 90% 90%);
+    }
+    
+    .shape.diamond {
+      background: linear-gradient(135deg, #ab47bc, #8e24aa);
+      transform: rotate(45deg);
+      border-radius: 8px;
+    }
+    
+    .shape.star {
+      background: linear-gradient(135deg, #66bb6a, #4caf50);
+      clip-path: polygon(50% 0%, 61% 35%, 98% 35%, 68% 57%, 79% 91%, 50% 70%, 21% 91%, 32% 57%, 2% 35%, 39% 35%);
+      border-radius: 0;
+    }
+    
+    .shape:hover {
+      transform: scale(1.25) rotate(15deg) !important;
+      box-shadow: 
+        0 25px 60px rgba(0,0,0,0.8),
+        inset 0 6px 12px rgba(255,255,255,0.4),
+        0 0 0 4px rgba(255,255,255,0.2),
+        0 0 30px rgba(0,255,136,0.3);
+      z-index: 10;
+      filter: brightness(1.2) saturate(1.3);
+    }
+    
+    .shape.diamond:hover {
+      transform: scale(1.25) rotate(60deg) !important;
+    }
+    
+    /* Section Text Animation Ultra Sophistiquée */
+    .text-animation-section {
+      position: relative;
+      height: 700vh;
+      background: transparent;
+      z-index: 4;
+      overflow: hidden;
+      margin-bottom: 50vh; /* Espace après la section */
+    }
+    
+    .text-animation-container {
+      position: sticky;
+      top: 0;
+      height: 100vh;
       display: flex;
       align-items: center;
       justify-content: flex-start;
-      margin-top: -0.2rem;
+      padding: 0 5%;
+      overflow: hidden;
     }
-    .line2-text {
-      display: inline-flex;
-      align-items: center;
-      font-family: 'NullFree', sans-serif;
-      font-size: 20vw;
-      letter-spacing: 0.5vw;
-      color: #fff;
-      line-height: 1;
-    }
-    .line2-text span.letter { display: inline-block; opacity: 0; transform: translateY(50px); }
-    .line2-text span.square {
-      display: inline-block;
-      width: 0.2em;
-      height: 0.2em;
-      background: #fff;
-      margin-left: 0.2em;
-      opacity: 0;
-      transform: scale(0.5);
-    }
-    .circle-wrapper { margin-left: 1rem; }
-    .circle-text-container { width: 300px; height: 300px; }
-    .circle-text-container svg { width: 100%; height: 100%; }
-    .circle-text {
-      font-family: sans-serif;
-      font-weight: bold;
-      font-size: 1.3rem;
-      fill: #fff;
-    }
-    .line3 {
-      font-family: 'Helvetica Neue', sans-serif;
-      color: #fff;
-      font-size: 7vw;
-      line-height: 1;
-      opacity: 0;
-      margin-top: -1.4rem;
-    }
-    .button-container {
-      position: fixed;
-      bottom: 30px;
-      left: 50%;
-      transform: translateX(-50%);
-      z-index: 10;
-      pointer-events: none;
-      box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
-      border-radius: 30px;
-    }
-    .button-inner {
+    
+    .text-sequence {
+      position: relative;
+      width: 340vw; /* Plus large pour le nouveau décalage */
+      height: 100%;
       display: flex;
-      width: 300px;
-      height: 50px;
-      border-radius: 30px;
-      overflow: hidden;
-      background: #fff;
+      align-items: center;
+      transform: translateX(20vw); /* Décalage initial plus important */
     }
-    .button-image {
-      width: 0;
-      overflow: hidden;
+    
+    .text-segment {
+      position: relative;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      width: 100vw;
+      height: 100vh;
+      flex-shrink: 0;
     }
-    .button-image img {
-      display: block;
+
+         /* PARTIE 4: Magnetic Field Ultra */
+     .magnetic-stage {
+       position: relative;
+       width: 100%;
+       height: 100%;
+       display: flex;
+       align-items: center;
+       justify-content: center;
+       overflow: hidden;
+     }
+     
+     .magnetic-field {
+       position: absolute;
+       width: 100%;
+       height: 100%;
+       z-index: 1;
+     }
+     
+     #magneticCanvas {
+       width: 100%;
+       height: 100%;
+       opacity: 0;
+     }
+     
+     .text-attraction {
+       position: relative;
+       z-index: 3;
+       display: grid;
+       grid-template-columns: 1fr 1fr;
+       grid-template-rows: 1fr 1fr;
+       gap: 3rem;
+       width: 70%;
+       height: 60%;
+     }
+     
+     .magnetic-word {
+       display: flex;
+       align-items: center;
+       justify-content: center;
+       font-family: 'Space Grotesk', sans-serif;
+       font-size: clamp(2.5rem, 5vw, 4.5rem);
+       font-weight: 700;
+       color: #20B2AA;
+       text-transform: lowercase;
+       background: rgba(0,0,0,0.9);
+       border: 3px solid #000;
+       border-radius: 20px;
+       backdrop-filter: blur(15px);
+       opacity: 0;
+       transform: scale(0.8);
+       position: relative;
+       overflow: hidden;
+       cursor: pointer;
+       transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+       box-shadow: 0 10px 30px rgba(0,0,0,0.5);
+       text-shadow: 0 0 10px rgba(32,178,170,0.3);
+     }
+     
+     .magnetic-word::before {
+       content: '';
+       position: absolute;
+       top: 0;
+       left: -100%;
+       width: 100%;
+       height: 100%;
+       background: linear-gradient(90deg, transparent, rgba(32,178,170,0.2), transparent);
+       transition: left 0.5s ease;
+     }
+     
+     .magnetic-word:hover::before {
+       left: 100%;
+     }
+     
+     .magnetic-word::after {
+       content: '';
+       position: absolute;
+       top: 50%;
+       left: 50%;
+       width: 0;
+       height: 0;
+       background: radial-gradient(circle, rgba(32,178,170,0.3), transparent);
+       border-radius: 50%;
+       transform: translate(-50%, -50%);
+       transition: all 0.4s ease;
+     }
+     
+     .magnetic-word.magnetized::after {
+       width: 200%;
+       height: 200%;
+     }
+     
+     .magnetic-particles {
+       position: absolute;
+       width: 100%;
+       height: 100%;
+       pointer-events: none;
+       z-index: 2;
+     }
+     
+     .magnetic-particle {
+       position: absolute;
+       width: 4px;
+       height: 4px;
+       background: #20B2AA;
+       border-radius: 50%;
+       opacity: 0;
+       box-shadow: 0 0 8px #20B2AA;
+     }
+
+    /* PARTIE 5: Mask Reveal */
+    .mask-container {
+      position: relative;
       width: 100%;
       height: 100%;
-      object-fit: cover;
-    }
-    .button-content {
-      flex-grow: 1;
-      white-space: nowrap;
       display: flex;
       align-items: center;
       justify-content: center;
-      padding: 10px 15px;
-      background: #000;
-      color: #fff;
-      font-family: 'NullFree', sans-serif;
-      font-size: 1em;
-      border-radius: 30px;
-      margin: 5px;
     }
     
-    /* ----- Nouvelle section "YOU CAN" ----- */
-    .you-can-section {
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      min-height: 200vh;
-      padding: 2rem;
-      background: transparent;
-    }
-    .pinned-text {
-      font-family: 'Geist', 'SF Pro Text', 'SF Pro Icons', 'AOS Icons',
-        'Helvetica Neue', Helvetica, Arial, sans-serif, system-ui;
-        font-weight: bold;
-      font-size: 6vw;
-      color: #fff;
-      margin-right: 2rem;
-    }
-    .list-column {
-      
-
-      scroll-snap-type: y mandatory;
-      flex: 1;
-      /* Ajustement pour que le haut de la liste apparaisse après le pin du texte */
-    }
-    .youcan-list {
-      padding-top: 90vh;
-      font-weight: bold;
-      list-style: none;
-     
-    }
-    .youcan-list li {
-      scroll-snap-align: center;
-      font-family: 'Geist', 'SF Pro Text', 'SF Pro Icons', 'AOS Icons',
-        'Helvetica Neue', Helvetica, Arial, sans-serif, system-ui;
-      font-size: 6vw;
-      opacity: 0.2;
-      margin-bottom: 2rem;
-      transition: opacity 0.3s, filter 0.3s;
-    }
-    
-    /* ----- Section "Cards" modifiée ----- */
-
-    .cards-section {
-      height: fit-content;
+    .mask-svg {
       width: 100%;
-      padding: 3rem 0;
-      background: #111;
-      margin-top: 4rem; /* Espace supplémentaire entre YOU CAN et Cards */
+      height: 400px;
     }
-    .cards-container {
+    
+    .mask-text {
+      font-family: 'Space Grotesk', sans-serif;
+      font-size: clamp(3rem, 6vw, 8rem);
+      font-weight: 900;
+      text-transform: lowercase;
+    }
+    
+    .explosion-fragments {
+      position: absolute;
+      width: 100%;
+      height: 100%;
+      pointer-events: none;
+    }
+    
+    .fragment {
+      position: absolute;
+      width: 20px;
+      height: 20px;
+      background: var(--accent-green);
+      opacity: 0;
+    }
+
+    /* PARTIE 6: Holographic */
+    .holographic-stage {
       position: relative;
-      width: 90%;
+      width: 100%;
+      height: 100%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+    
+    .hologram-layers {
+      position: relative;
+    }
+    
+    .holo-layer {
+      position: absolute;
+      top: 0;
+      left: 0;
+      font-family: 'Space Grotesk', sans-serif;
+      font-size: clamp(4rem, 8vw, 10rem);
+      font-weight: 900;
+      text-transform: lowercase;
+      opacity: 0;
+      mix-blend-mode: screen;
+    }
+    
+    .layer-1 {
+      color: #00ff88;
+      transform: translate(-2px, -2px);
+    }
+    
+    .layer-2 {
+      color: #00ccff;
+      transform: translate(0px, 0px);
+    }
+    
+    .layer-3 {
+      color: #ff6b6b;
+      transform: translate(2px, 2px);
+    }
+    
+    .scan-lines {
+      position: absolute;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      background: repeating-linear-gradient(
+        0deg,
+        transparent 0px,
+        transparent 2px,
+        rgba(0,255,136,0.1) 2px,
+        rgba(0,255,136,0.1) 4px
+      );
+      opacity: 0;
+      animation: scanMove 2s linear infinite;
+    }
+    
+    @keyframes scanMove {
+      0% { transform: translateY(-100%); }
+      100% { transform: translateY(100%); }
+    }
+    
+    .glitch-overlay {
+      position: absolute;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      opacity: 0;
+    }
+    
+    .energy-field {
+      position: absolute;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      background: radial-gradient(circle, rgba(0,255,136,0.2) 0%, transparent 70%);
+      opacity: 0;
+      animation: energyPulse 3s ease-in-out infinite;
+    }
+    
+    @keyframes energyPulse {
+      0%, 100% { transform: scale(0.8); opacity: 0; }
+      50% { transform: scale(1.2); opacity: 0.6; }
+    }
+
+    /* Section Cards Ultra */
+    .cards-section {
+      position: relative;
+      background: transparent;
+      min-height: 400vh;
+      z-index: 5;
+    }
+    
+    .cards-container {
+      position: sticky;
+      top: 0;
+      height: 100vh;
       max-width: 1200px;
       margin: 0 auto;
-      min-height: 100vh;
-      display: flex;
-      flex-direction: column;
-      gap: 2rem;
-      align-items: center;
-    }
-    .card {
-      width: 100%;
-      height: 90vh; /* Hauteur de 80vh pour chaque carte */
-      background: #171717;               /* Fond noir */
-      border: 1px solid #333;         /* Bordure sombre */
-      border-radius: 20px;
-      box-shadow: 0 4px 12px rgba(0,0,0,0.8);  /* Effet surélevé */
-      overflow: hidden;
-      display: flex;
-    }
-    
-    
-    /* gauche = 60%, droite = 40% */
-    .card-left {
-      flex: 1 1 50%;
-      padding: 2rem;
-      display: flex;
-      flex-direction: column;
-      justify-content: space-between; /* titre en haut, boutons en bas */
-    }
-    .card-right {
-      flex: 0 0 50%;
-      padding-left: 4em;
-      padding-right: 4em;
-      padding-top: 2em;
-      padding-bottom: 2em;
-      
+      padding: 0 2rem;
       display: flex;
       align-items: center;
       justify-content: center;
+      overflow: hidden;
     }
-    .card-right video {
     
-      
-     border-radius: 20px;
+    .card {
+      position: absolute;
+      width: 95%;
+      height: 85vh;
+      background: var(--card-bg);
+      border: 3px solid var(--border-gray);
+      border-radius: 0;
+      display: flex;
+      overflow: hidden;
+      box-shadow: 0 20px 60px rgba(0,0,0,0.8);
+      transform: translateY(100vh) rotateX(15deg);
+      opacity: 1;
+      backdrop-filter: blur(10px);
     }
-    /* on passe la marge à 3rem pour bien séparer titre / sous‑titre */
-.card-title {
-  font-size: 6rem;
-  color: #fff;
-  font-family: 'sfrprodisplay-medium', sans-serif;
-  margin: 0 0 3rem;  /* ← ici on a augmenté la marge */
-}
-
-.card-subtitle {
-  font-size: 2.5rem;
-  color: #ccc;
-  font-family: 'sfprodisplay-medium', sans-serif;
-  margin: 0;          /* tu peux aussi ajouter un margin-top si tu veux */
-  /* par exemple : margin: 1rem 0 0; */
-}
-
-    /* Boutons Google Play + App Store */
-    .playstore-button,
-    .appstore-button {
-      font-family: 'Helvetica Neue', sans-serif;
-
+    
+    .card-left {
+      flex: 1;
+      padding: 3rem;
+      display: flex;
+      flex-direction: column;
+      justify-content: space-between;
+    }
+    
+    .card-right {
+      flex: 1;
+      padding: 2rem;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      position: relative;
+    }
+    
+    .card-title {
+      font-family: 'Space Grotesk', sans-serif;
+      font-size: clamp(3rem, 6vw, 6rem);
+      font-weight: 900;
+      color: var(--text-white);
+      margin-bottom: 2rem;
+      text-transform: lowercase;
+      letter-spacing: -0.02em;
+    }
+    
+    .card-subtitle {
+      font-family: 'Space Grotesk', sans-serif;
+      font-size: clamp(1.5rem, 2.5vw, 2.5rem);
+      color: var(--text-gray);
+      font-weight: 500;
+      margin-bottom: 3rem;
+      line-height: 1.3;
+    }
+    
+    .buttons-container {
+      display: flex;
+      gap: 1rem;
+      flex-wrap: wrap;
+    }
+    
+    .store-button {
       display: inline-flex;
       align-items: center;
-      border: 2px solid #fff;
-      border-radius: 9999px;
-      background-color: #000;
-      padding: 0.625rem 1.5rem;
-      color: #fff;
+      gap: 1rem;
+      padding: 1rem 2rem;
+      border: 3px solid var(--text-white);
+      border-radius: 0;
+      background: transparent;
+      color: var(--text-white);
       text-decoration: none;
-      transition: all 0.2s ease;
-      margin-right: 1rem;
+      transition: all 0.3s ease;
+      font-family: 'Space Grotesk', sans-serif;
+      position: relative;
+      overflow: hidden;
     }
-    .playstore-button:hover,
-    .appstore-button:hover {
-      background-color: transparent;
-      color: #fff;
+    
+    .store-button:hover {
+      background: var(--text-white);
+      color: var(--main-bg);
     }
-    .playstore-button .icon,
-    .appstore-button .icon {
-      width: 1.5rem;
-      height: 1.5rem;
+    
+    .store-icon {
+      width: 24px;
+      height: 24px;
     }
-    .playstore-button .texts,
-    .appstore-button .texts {
+    
+    .store-text {
       display: flex;
       flex-direction: column;
       align-items: flex-start;
-      margin-left: 1rem;
-      line-height: 1;
     }
-    .playstore-button .text-1,
-    .appstore-button .text-1 {
+    
+    .store-text-small {
+      font-family: 'Space Grotesk', sans-serif;
       font-size: 0.75rem;
-      line-height: 1rem;
-      margin-bottom: 0.25rem;
+      opacity: 0.8;
+      text-transform: uppercase;
+      letter-spacing: 0.1em;
     }
-    .playstore-button .text-2,
-    .appstore-button .text-2 {
-      font-weight: 600;
+    
+    .store-text-large {
+      font-family: 'Space Grotesk', sans-serif;
+      font-size: 1rem;
+      font-weight: 700;
+      text-transform: uppercase;
+      letter-spacing: 0.05em;
     }
-
-    /* Card 1 : video responsive */
+    
+    /* Card specific styles */
+    .card1 .card-right {
+      position: relative;
+    }
+    
+    .scatter-img {
+      position: absolute;
+      width: 40%;
+      border-radius: 0;
+      box-shadow: 0 10px 25px rgba(0,0,0,0.5);
+      transition: transform 0.3s ease;
+      border: 3px solid #000;
+    }
+    
+    .img1 { top: 10%; left: 10%; transform: rotate(-12deg); }
+    .img2 { top: 30%; right: 10%; transform: rotate(8deg); }
+    .img3 { bottom: 10%; left: 20%; transform: rotate(-5deg); }
+    
     .card2 video {
       width: 100%;
       height: 100%;
       object-fit: cover;
+      border-radius: 0;
+      border: 3px solid #000;
     }
-
-    /* Card 2 : scatter images */
-    .card1 .scatter-img {
-      position: absolute;
-      width: 40%;
-      object-fit: cover;
-      filter: drop-shadow(0 5px 10px rgba(0,0,0,0.5));
-      transition: transform 0.3s ease-out;
-    }
-    .card1 .img1 { top: 7%; left: 5%; transform: rotate(-12deg); border-radius: 20px; }
-    .card1 .img2 { top: 20%; left: 45%; transform: rotate(8deg); border-radius: 20px;}
-    .card1 .img3 { top: 60%; left: 25%; transform: rotate(-5deg); border-radius: 20px;}
     
+    /* Responsive */
+    @media (max-width: 768px) {
+      .you-can-container {
+        flex-direction: column;
+        gap: 2rem;
+      }
+      
+      .pinned-text {
+        margin-right: 0;
+        text-align: center;
+      }
+      
+      .card {
+        flex-direction: column;
+        height: auto;
+      }
+      
+      .card-left,
+      .card-right {
+        flex: none;
+      }
+    }
 
+    /* Section Text Animation Pro Style */
+    .segment-intro {
+      background: transparent;
+    }
+    
+    .intro-wrapper {
+      position: relative;
+    }
+    
+    .intro-text {
+      font-family: 'Space Grotesk', sans-serif;
+      font-size: clamp(4rem, 8vw, 10rem);
+      font-weight: 900;
+      text-transform: lowercase;
+      margin: 0;
+      white-space: nowrap; /* Force tout sur une ligne */
+    }
+    
+    .word {
+      display: inline-block;
+      opacity: 0;
+      transform: translateY(100px) rotate(10deg);
+      color: var(--text-white);
+      margin: 0 0.2em; /* Réduit l'espacement entre les mots */
+      position: relative;
+    }
+    
+    .word:first-child {
+      background: var(--rainbow-gradient);
+      background-size: 300% 100%;
+      background-clip: text;
+      -webkit-background-clip: text;
+      color: transparent;
+      animation: rainbowFlow 4s ease-in-out infinite;
+    }
+    
+    .word:first-child {
+      background: var(--rainbow-gradient);
+      background-size: 300% 100%;
+      background-clip: text;
+      -webkit-background-clip: text;
+      color: transparent;
+      animation: rainbowFlow 4s ease-in-out infinite;
+    }
+    
+    .word::after {
+      content: '';
+      position: absolute;
+      bottom: -5px;
+      left: 0;
+      width: 0%;
+      height: 4px;
+      background: #000;
+      transition: width 0.8s ease;
+    }
+    
+    .word.visible::after {
+      width: 100%;
+    }
+    
+    .intro-shape {
+      position: absolute;
+      border: 3px solid #000;
+      background: var(--rainbow-gradient);
+      background-size: 300% 100%;
+      animation: rainbowFlow 6s ease-in-out infinite;
+      backdrop-filter: blur(10px);
+      opacity: 0;
+    }
+    
+    .shape-circle {
+      width: 150px;
+      height: 150px;
+      border-radius: 50%;
+      top: -120px; /* Plus écarté du texte */
+      right: 10%;
+    }
+    
+    .shape-square {
+      width: 120px;
+      height: 120px;
+      border-radius: 20px;
+      bottom: -100px; /* Plus écarté du texte */
+      left: 15%;
+      transform: rotate(45deg);
+    }
+    
+    /* Segment Middle */
+    .segment-middle {
+      background: transparent;
+    }
+    
+    .middle-wrapper {
+      position: relative;
+      text-align: center;
+    }
+    
+    .text-transform {
+      position: relative;
+      margin-bottom: 2rem;
+    }
+    
+    .transform-text {
+      font-family: 'Space Grotesk', sans-serif;
+      font-size: clamp(5rem, 10vw, 12rem);
+      font-weight: 900;
+      color: var(--text-white);
+      text-transform: lowercase;
+      display: block;
+      opacity: 0;
+      transform: scale(0.5);
+      text-shadow: 0 0 20px rgba(255,255,255,0.1);
+    }
+    
+    .transform-shapes {
+      position: absolute;
+      width: 100%;
+      height: 100%;
+      top: 0;
+      left: 0;
+      pointer-events: none;
+    }
+    
+    .transform-shape {
+      position: absolute;
+      width: 100px;
+      height: 100px;
+      border: 3px solid #000;
+      background: rgba(255,255,255,0.1);
+      backdrop-filter: blur(10px);
+      border-radius: 15px;
+      opacity: 0;
+      transform: scale(0) rotate(0deg);
+    }
+    
+    .transform-shape[data-index="1"] {
+      background: var(--rainbow-gradient);
+      background-size: 300% 100%;
+      animation: rainbowFlow 5s ease-in-out infinite;
+    }
+    
+    .transform-shape[data-index="0"] { top: -30px; left: 20%; }
+    .transform-shape[data-index="1"] { top: 50%; right: 10%; }
+    .transform-shape[data-index="2"] { bottom: -20px; left: 40%; }
+    
+    .text-secondary {
+      display: flex;
+      gap: 2rem;
+      justify-content: center;
+    }
+    
+    .secondary-word {
+      font-family: 'Space Grotesk', sans-serif;
+      font-size: clamp(3rem, 6vw, 7rem);
+      font-weight: 600;
+      color: var(--text-white);
+      opacity: 0;
+      transform: translateX(-50px);
+    }
+    
+    .secondary-word:last-child {
+      background: var(--rainbow-gradient);
+      background-size: 300% 100%;
+      background-clip: text;
+      -webkit-background-clip: text;
+      color: transparent;
+      animation: rainbowFlow 4s ease-in-out infinite;
+    }
+    
+    /* Segment End */
+    .segment-end {
+      background: transparent;
+    }
+    
+    .end-wrapper {
+      position: relative;
+      text-align: center;
+    }
+    
+    .final-text {
+      font-family: 'Space Grotesk', sans-serif;
+      font-size: clamp(4rem, 8vw, 10rem);
+      font-weight: 700;
+      text-transform: lowercase;
+    }
+    
+    .final-word {
+      display: inline-block;
+      margin: 0 0.3em;
+      opacity: 0;
+      transform: scale(0.8) rotate(-5deg);
+      color: var(--text-white);
+    }
+    
+    .final-word.highlight {
+      background: rgba(0,0,0,0.9);
+      border: 3px solid #000;
+      border-radius: 15px;
+      padding: 0.4em 0.8em; /* Plus de padding pour les gros textes */
+      backdrop-filter: blur(10px);
+      position: relative;
+      overflow: hidden;
+      margin: 0 0.2em; /* Espacement horizontal */
+    }
+    
+    .final-word.highlight::before {
+      content: '';
+      position: absolute;
+      top: 0;
+      left: -100%;
+      width: 100%;
+      height: 100%;
+      background: linear-gradient(90deg, transparent, rgba(255,255,255,0.2), transparent);
+      animation: highlightSweep 2s ease-in-out infinite;
+    }
+    
+    @keyframes highlightSweep {
+      0% { left: -100%; }
+      100% { left: 100%; }
+    }
+    
+    .impact-visual {
+      position: absolute;
+      width: 100%;
+      height: 100%;
+      top: 0;
+      left: 0;
+      pointer-events: none;
+    }
+    
+    .impact-ring {
+      position: absolute;
+      width: 300px;
+      height: 300px;
+      border: 3px solid #000;
+      border-radius: 50%;
+      top: 50%;
+      left: 50%;
+      transform: translate(-50%, -50%) scale(0);
+      opacity: 0;
+    }
+    
+    .impact-particles {
+      position: absolute;
+      width: 100%;
+      height: 100%;
+    }
+    
+    .impact-particle {
+      position: absolute;
+      width: 6px;
+      height: 6px;
+      background: #000;
+      border-radius: 50%;
+      opacity: 0;
+    }
 
-  
-.new-section {
-  /* Hauteur suffisante pour le scroll et les animations */
-  /* Ajustez si nécessaire en fonction de la durée des pins */
-  min-height: 300vh;
-  /* Couleur de fond */
-  background-color: #1a1a1a; /* Un peu différent pour la distinguer */
-  color: #fff;
-  /* Centrage du contenu pour le début */
-  display: flex;
-  justify-content: center;
-  align-items: flex-start; /* Aligner en haut pour le titre */
-  padding-top: 20vh; /* Espace au-dessus du titre */
-  overflow: hidden; /* Important pour éviter les débordements pendant les animations */
-  position: relative; /* Contexte de positionnement */
-}
+    /* Contact Section */
+    .contact-section {
+      min-height: 100vh;
+      background: #000;
+      position: relative;
+      padding: 100px 50px;
+      margin-top: 200px; /* Gros espace avec la section du haut */
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      overflow: hidden;
+    }
 
-.new-container {
-  width: 90%;
-  max-width: 1100px; /* Largeur max */
-  margin: 0 auto;
-  text-align: center;
-  position: relative; /* Pour le positionnement des enfants */
-}
+    .contact-container {
+      max-width: 800px;
+      width: 100%;
+      position: relative;
+      z-index: 10;
+    }
 
-#newHeading {
-  font-size: clamp(2.5rem, 6vw, 4.5rem); /* Taille responsive */
-  line-height: 1.2;
-  margin: 0 auto 15vh auto; /* Marge en bas pour laisser place à l'animation */
-  font-family: 'sfrprodisplay-medium', sans-serif; /* Utilisation de la police SF Pro */
-  font-weight: 600;
-  display: block; /* Assurez-vous qu'il prend toute la largeur */
-  /* Important pour l'animation lettre/mot */
-  overflow: hidden; /* Cache les lettres avant animation */
-}
+    .contact-title {
+      font-family: 'Space Grotesk', sans-serif;
+      font-size: clamp(4rem, 8vw, 8rem);
+      font-weight: 900;
+      color: #fff;
+      text-align: center;
+      margin-bottom: 80px;
+      line-height: 1.1;
+      position: relative;
+    }
+    
+    .contact-title::after {
+      content: '';
+      position: absolute;
+      bottom: -20px;
+      left: 50%;
+      transform: translateX(-50%);
+      width: 100px;
+      height: 3px;
+      background: var(--rainbow-gradient);
+      background-size: 300% 100%;
+      animation: rainbowFlow 5s ease-in-out infinite;
+    }
+    
+    .contact-title .letter {
+      display: inline-block;
+      transform-style: preserve-3d;
+      perspective: 1000px;
+    }
 
-/* Style pour les spans du titre (pour l'animation) */
-#newHeading span {
-  display: inline-block; /* Permet transform */
-  opacity: 0; /* Initialement invisible */
-  transform: translateY(100%); /* Position initiale en bas */
-  margin-right: 0.2em; /* Petit espace entre les mots */
-}
-#newHeading span:last-child {
-  margin-right: 0;
-}
+    .contact-form {
+      background: transparent;
+      border: 3px solid rgba(255, 255, 255, 0.1);
+      border-radius: 0;
+      padding: 80px;
+      position: relative;
+    }
+    
+    .contact-form::before {
+      content: '';
+      position: absolute;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 3px;
+      background: rgba(255, 255, 255, 0.1);
+    }
 
+    .form-row {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 30px;
+      margin-bottom: 30px;
+    }
 
-.row {
-  display: flex;
-  justify-content: center; /* Centre les éléments horizontalement */
-  align-items: center; /* Centre les éléments verticalement */
-  gap: 2rem; /* Espace entre les éléments */
-  width: 100%;
-  margin-top: 5vh; /* Espace au-dessus de la rangée */
-  position: relative; /* Pour le positionnement absolu des cartes si nécessaire */
-  /* Initialement cachée */
-  opacity: 0;
-  transform: translateY(100px); /* Position initiale pour l'animation d'entrée */
-}
+    .form-group {
+      position: relative;
+    }
 
-.row .item {
-  /* Base commune pour l'image et les cartes */
-  opacity: 0; /* Caché initialement pour l'animation stagger */
-  transform: translateY(50px); /* Position initiale pour stagger */
-  transition: transform 0.5s cubic-bezier(0.68, -0.55, 0.27, 1.55); /* Transition pour hover */
-}
+    .form-group.full-width {
+      grid-column: 1 / -1;
+    }
 
-.row .item:hover {
-    transform: translateY(-10px) scale(1.03); /* Effet de survol */
-}
+    .form-group input {
+      width: 100%;
+      padding: 20px 0 10px 0;
+      background: transparent;
+      border: none;
+      border-bottom: 3px solid rgba(255, 255, 255, 0.1);
+      color: #fff;
+      font-family: 'Space Grotesk', sans-serif;
+      font-size: 18px;
+      font-weight: 500;
+      transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+    }
 
+    .form-group input:focus {
+      outline: none;
+      border-bottom-color: #fff;
+    }
 
-.row .image {
-  flex-shrink: 0; /* Empêche l'image de rétrécir */
-}
+    .form-group label {
+      position: absolute;
+      left: 0;
+      top: 20px;
+      color: rgba(255, 255, 255, 0.5);
+      font-family: 'Space Grotesk', sans-serif;
+      font-size: 16px;
+      font-weight: 600;
+      transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+      pointer-events: none;
+      text-transform: uppercase;
+      letter-spacing: 0.1em;
+    }
 
-.row .image img {
-  width: clamp(150px, 15vw, 200px); /* Taille responsive */
-  height: clamp(150px, 15vw, 200px);
-  border-radius: 50%; /* Image ronde */
-  object-fit: cover; /* Assure que l'image couvre bien */
-  border: 4px solid #444; /* Petite bordure */
-  box-shadow: 0 8px 25px rgba(0,0,0,0.4);
-}
+    .form-group input:focus ~ label,
+    .form-group input:valid ~ label,
+    .form-group input:not(:placeholder-shown) ~ label {
+      top: -5px;
+      font-size: 11px;
+      color: #fff;
+    }
 
-.row .card {
-  background: #282828; /* Fond légèrement plus clair */
-  padding: 1.5rem;
-  border-radius: 16px; /* Coins arrondis */
-  width: clamp(180px, 20vw, 240px); /* Largeur responsive */
-  text-align: left; /* Texte aligné à gauche dans les cartes */
-  box-shadow: 0 6px 18px rgba(0,0,0,0.3);
-  border: 1px solid #3a3a3a;
-  position: relative; /* Pour le positionnement du contenu */
-  overflow: hidden; /* Cache le contenu qui dépasse */
-  min-height: 180px; /* Hauteur minimale pour l'alignement */
-  display: flex;
-  flex-direction: column;
-  justify-content: center; /* Centre le contenu verticalement */
-}
+    .submit-btn {
+      margin-top: 80px;
+      width: 100%;
+      padding: 30px;
+      background: #000;
+      border: 3px solid #fff;
+      border-radius: 0;
+      color: #fff;
+      font-family: 'Space Grotesk', sans-serif;
+      font-size: 20px;
+      font-weight: 900;
+      text-transform: uppercase;
+      letter-spacing: 0.2em;
+      cursor: pointer;
+      position: relative;
+      overflow: hidden;
+      transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+    }
 
-/* Optionnel: si vous voulez une petite image/logo dans la carte */
-.row .card .card-logo {
-  width: 60px; /* Ajustez la taille */
-  height: auto;
-  margin-bottom: 1rem;
-  opacity: 0.8;
-}
+    .submit-btn::before {
+      content: '';
+      position: absolute;
+      top: 0;
+      left: -100%;
+      width: 100%;
+      height: 100%;
+      background: #fff;
+      transition: left 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+    }
 
+    .submit-btn:hover {
+      color: #000;
+    }
 
-.row .card h3 {
-  margin: 0 0 0.75rem 0; /* Espace sous le titre */
-  font-size: clamp(1.1rem, 1.8vw, 1.4rem); /* Taille responsive */
-  font-family: 'sfrprodisplay-medium', sans-serif;
-  color: #eee;
-  font-weight: 600;
-}
+    .submit-btn:hover::before {
+      left: 0;
+    }
 
-.row .card p {
-  margin: 0;
-  font-size: clamp(0.85rem, 1.5vw, 1rem); /* Taille responsive */
-  color: #bbb; /* Couleur du texte plus douce */
-  font-family: 'Geist', sans-serif;
-  line-height: 1.4;
-}
+    .submit-btn span {
+      position: relative;
+      z-index: 2;
+    }
 
-/* Inclinaisons pour les cartes et l'image */
-.tilt-img { transform: rotate(-4deg); }
-.tilt1 { transform: rotate(5deg); }
-.tilt2 { transform: rotate(-6deg); }
-.tilt3 { transform: rotate(4deg); }
+    /* Footer */
+    .footer {
+      background: #000;
+      padding: 150px 50px 50px;
+      position: relative;
+      overflow: hidden;
+      margin-top: 150px;
+    }
 
-/* Styles pour le survol des éléments inclinés (réinitialise l'inclinaison et ajoute un scale) */
-.row .item.tilt-img:hover,
-.row .item.tilt1:hover,
-.row .item.tilt2:hover,
-.row .item.tilt3:hover {
-    transform: translateY(-10px) scale(1.05) rotate(0deg); /* Réinitialise la rotation au survol */
-}
+    .footer::before {
+      content: '';
+      position: absolute;
+      top: 0;
+      left: 0;
+      right: 0;
+      height: 3px;
+      background: rgba(255, 255, 255, 0.1);
+    }
 
+    .footer-container {
+      max-width: 1400px;
+      margin: 0 auto;
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 100px;
+      align-items: flex-end;
+    }
 
+    .footer-left {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 50px;
+    }
+
+    .footer-section h4 {
+      font-family: 'Space Grotesk', sans-serif;
+      font-size: 14px;
+      font-weight: 900;
+      color: #fff;
+      margin-bottom: 30px;
+      text-transform: uppercase;
+      letter-spacing: 0.2em;
+    }
+
+    .footer-section ul {
+      list-style: none;
+    }
+
+    .footer-section li {
+      margin-bottom: 20px;
+    }
+
+    .footer-section a,
+    .footer-section li:not(:has(a)) {
+      color: rgba(255, 255, 255, 0.5);
+      text-decoration: none;
+      font-family: 'Space Grotesk', sans-serif;
+      font-size: 16px;
+      font-weight: 500;
+      transition: all 0.3s ease;
+      display: inline-block;
+    }
+
+    .footer-section a:hover {
+      color: #fff;
+      transform: translateX(5px);
+    }
+
+    .footer-right {
+      text-align: right;
+      position: relative;
+    }
+
+    .footer-logo {
+      font-family: 'Space Grotesk', sans-serif;
+      font-size: clamp(5rem, 10vw, 10rem);
+      font-weight: 900;
+      color: #fff;
+      line-height: 0.8;
+      letter-spacing: -0.05em;
+      position: relative;
+      display: inline-block;
+    }
+
+    .footer-logo::before {
+      content: '';
+      position: absolute;
+      bottom: -10px;
+      left: 0;
+      width: 100%;
+      height: 5px;
+      background: var(--rainbow-gradient);
+      background-size: 300% 100%;
+      animation: rainbowFlow 5s ease-in-out infinite;
+      transform: scaleX(0);
+      transform-origin: left;
+      transition: transform 0.3s ease;
+    }
+
+    .footer-logo:hover::before {
+      transform: scaleX(1);
+    }
+
+    .footer-bottom {
+      grid-column: 1 / -1;
+      text-align: center;
+      margin-top: 100px;
+      padding-top: 50px;
+      border-top: 1px solid rgba(255, 255, 255, 0.1);
+    }
+
+    .footer-bottom p {
+      font-family: 'Space Grotesk', sans-serif;
+      font-size: 14px;
+      color: rgba(255, 255, 255, 0.3);
+      letter-spacing: 0.1em;
+    }
+
+    /* Responsive */
+    @media (max-width: 768px) {
+      .form-row {
+        grid-template-columns: 1fr;
+      }
+
+      .contact-form {
+        padding: 40px 30px;
+      }
+
+      .footer-container {
+        flex-direction: column;
+        gap: 60px;
+      }
+
+      .footer-left {
+        flex-direction: column;
+        gap: 40px;
+      }
+
+      .footer-right {
+        text-align: left;
+      }
+    }
   </style>
 </head>
 <body>
-  <!-- SECTION HERO -->
-  <div class="hero">
-    <div class="content">
-      <div class="line1" id="line1">
-        <span class="letter">U</span>
-        <span class="letter">N</span>
-        <span class="letter">D</span>
-        <span class="letter">E</span>
+  <!-- Loading Screen -->
+  <div class="loading-screen" id="loadingScreen">
+    <div class="loading-container">
+      <div class="loading-logo">
+        <span class="loading-letter" data-letter="U">U</span>
+        <span class="loading-letter" data-letter="N">N</span>
+        <span class="loading-letter" data-letter="D">D</span>
+        <span class="loading-letter" data-letter="E">E</span>
+        <span class="loading-letter" data-letter="F">F</span>
+        <span class="loading-letter" data-letter="I">I</span>
+        <span class="loading-letter" data-letter="N">N</span>
+        <span class="loading-letter" data-letter="E">E</span>
+        <span class="loading-letter" data-letter="D">D</span>
       </div>
+      <div class="loading-progress-container">
+        <div class="loading-progress" id="loadingProgress"></div>
+      </div>
+      <div class="loading-text">Chargement des expériences ultra modernes...</div>
+    </div>
+  </div>
+
+  <!-- Background dynamique -->
+  <div class="dynamic-bg"></div>
+  <div class="grid-bg"></div>
+
+  <!-- Section Hero Ultra -->
+  <section class="hero">
+    <div class="hero-content">
+      <div class="line1" id="line1">
+        <span>U</span><span>N</span><span>D</span><span>E</span>
+      </div>
+      
       <div class="line2-wrapper">
         <div class="line2-text" id="line2">
           <span class="letter">F</span>
@@ -707,376 +1685,980 @@
           <span class="letter">N</span>
           <span class="letter">E</span>
           <span class="letter">D</span>
-          <span class="square"></span>
+          <div class="square"></div>
         </div>
-        <div class="circle-wrapper">
-          <div class="circle-text-container" id="circleTextContainer">
+        
+        <div class="circle-wrapper" id="circleWrapper">
+          <div class="circle-text-container" id="circleContainer">
             <svg viewBox="0 0 300 300">
               <defs>
                 <path id="circlePath" d="M150,150 m -100,0 a 100,100 0 1,1 200,0 a 100,100 0 1,1 -200,0"/>
               </defs>
               <text class="circle-text">
-                <textPath xlink:href="#circlePath">
-                  • Empower the world with apps • Empower the world with apps • Empower the world with apps •
+                <textPath href="#circlePath">
+                  • empower the world with apps • empower the world with apps • empower the world with apps •
                 </textPath>
               </text>
             </svg>
           </div>
         </div>
       </div>
+      
       <div class="line3" id="line3">studio</div>
     </div>
-  </div>
-  
-  <!-- Bouton pinned -->
-  <!--<div class="button-container">
-    <div class="button-inner">
-      <div class="button-image">
-        <img src="Capture d'écran 2025-04-09 à 14.38.52.png" alt="Image contact">
-      </div>
-      <div class="button-content">
-        <span>Nous contacter</span>
-        <svg viewBox="0 0 24 24" style="width: 20px; height: 20px; margin-left: 10px;">
-          <path fill="currentColor" d="M2.5 19.5l19-7-19-7v5.5l12 1.5-12 1.5z"/>
-        </svg>
-      </div>
-    </div>
-  </div> -->
-  
-  <!-- Section YOU CAN -->
+  </section>
+
+  <!-- Section YOU CAN Ultra -->
   <section class="you-can-section">
-    <div class="pinned-text">Des apps qui</div>
-    <div class="list-column">
-      <ul class="youcan-list" style="--count: 22">
-        <li style="--i: 0">inspirent.</li>
-        <li style="--i: 1">simplifient.</li>
-        <li style="--i: 2">connectent.</li>
-        <li style="--i: 3">révolutionnent.</li>
-        <li style="--i: 4">optimisent.</li>
-        <li style="--i: 5">automatisent.</li>
-        <li style="--i: 6">protègent.</li>
-        <li style="--i: 7">stimulent.</li>
-        <li style="--i: 8">transforment.</li>
-        <li style="--i: 9">dynamisent.</li>
-        <li style="--i: 10">facilitent.</li>
-        <li style="--i: 11">catalysent.</li>
-        <li style="--i: 12">modernisent.</li>
-        <li style="--i: 13">accélèrent.</li>
-        <li style="--i: 14">renforcent.</li>
-        <li style="--i: 15">fluidifient.</li>
-        <li style="--i: 16">harmonisent.</li>
-        <li style="--i: 17">bousculent.</li>
-        <li style="--i: 18">innovent.</li>
-        <li style="--i: 19">valorisent.</li>
-        <li style="--i: 20">libèrent.</li>
-        <li style="--i: 21">unissent.</li>
-      </ul>
+    <div class="you-can-container">
+      <div class="pinned-text" id="pinnedText">des apps qui</div>
+      <div class="words-container">
+        <div class="scrolling-words-list" id="scrollingWordsList">
+          <div class="word-item">inspirent.</div>
+          <div class="word-item">simplifient.</div>
+          <div class="word-item">connectent.</div>
+          <div class="word-item">révolutionnent.</div>
+          <div class="word-item">optimisent.</div>
+          <div class="word-item">automatisent.</div>
+          <div class="word-item">protègent.</div>
+          <div class="word-item">stimulent.</div>
+          <div class="word-item">transforment.</div>
+          <div class="word-item">dynamisent.</div>
+          <div class="word-item">facilitent.</div>
+          <div class="word-item">catalysent.</div>
+          <div class="word-item">modernisent.</div>
+          <div class="word-item">accélèrent.</div>
+          <div class="word-item">renforcent.</div>
+          <div class="word-item">fluidifient.</div>
+          <div class="word-item">harmonisent.</div>
+          <div class="word-item">bousculent.</div>
+          <div class="word-item">innovent.</div>
+          <div class="word-item">valorisent.</div>
+          <div class="word-item">libèrent.</div>
+          <div class="word-item">unissent.</div>
+        </div>
+      </div>
     </div>
   </section>
-  
+
+  <!-- Section Motion Design -->
+  <section class="motion-section">
+    <div class="motion-container">
+      <div class="slogan" id="slogan">
+        <span class="slogan-line">
+          <span class="slogan-word">créer</span> 
+          <span class="slogan-word special">l'impossible</span>
+        </span>
+        <span class="slogan-line">
+          <span class="slogan-word">avec</span> 
+          <span class="slogan-word special">passion</span>
+        </span>
+      </div>
+      <div class="floating-shapes" id="floatingShapes"></div>
+    </div>
+  </section>
+
+  <!-- Section Text Animation Pro Style GSAP -->
+  <section class="text-animation-section">
+    <div class="text-animation-container">
+      <div class="text-sequence" id="textSequence">
+        
+        <!-- Introduction: Reveal simple -->
+        <div class="text-segment segment-intro">
+          <div class="intro-wrapper">
+            <h2 class="intro-text">
+              <span class="word" data-delay="0">Chaque</span>
+              <span class="word" data-delay="0.1">ligne</span>
+              <span class="word" data-delay="0.2">de</span>
+              <span class="word" data-delay="0.3">code</span>
+            </h2>
+            <div class="intro-shape shape-circle"></div>
+            <div class="intro-shape shape-square"></div>
+          </div>
+        </div>
+
+        <!-- Milieu: Transformation -->
+        <div class="text-segment segment-middle">
+          <div class="middle-wrapper">
+            <div class="text-transform">
+              <span class="transform-text">transforme</span>
+              <div class="transform-shapes">
+                <div class="transform-shape" data-index="0"></div>
+                <div class="transform-shape" data-index="1"></div>
+                <div class="transform-shape" data-index="2"></div>
+              </div>
+            </div>
+            <div class="text-secondary">
+              <span class="secondary-word">votre</span>
+              <span class="secondary-word">vision</span>
+            </div>
+          </div>
+        </div>
+
+        <!-- Fin: Impact final -->
+        <div class="text-segment segment-end">
+          <div class="end-wrapper">
+            <div class="final-text">
+              <span class="final-word">en</span>
+              <span class="final-word highlight">réalité</span>
+              <span class="final-word highlight">digitale</span>
+            </div>
+            <div class="impact-visual">
+              <div class="impact-ring"></div>
+              <div class="impact-particles"></div>
+            </div>
+          </div>
+        </div>
+
+      </div>
+    </div>
+  </section>
+
   <!-- Section Cards -->
   <section class="cards-section">
-    <div class="cards-container">
-
-      <!-- CARD 1 -->
+    <div class="cards-container" id="cardsContainer">
+      
+      <!-- Card 1 -->
       <div class="card card1">
         <div class="card-left">
           <div>
-            <h2 class="card-title">Titre 1</h2>
-            <p class="card-subtitle">Sous-titre explicatif 1</p>
+            <h2 class="card-title">Vago</h2>
+            <p class="card-subtitle">L'application qui révolutionne votre quotidien</p>
           </div>
-          <div>
-            <!-- bouton Google Play -->
-            <a class="playstore-button" href="#">
-              <svg xmlns="http://www.w3.org/2000/svg" fill="currentColor" class="icon" viewBox="0 0 512 512">
-                <path d="M99.617 8.057a50.191 50.191 0 00-38.815-6.713l230.932 230.933 74.846-74.846L99.617 8.057zM32.139 20.116c-6.441 8.563-10.148 19.077-10.148 30.199v411.358c0 11.123 3.708 21.636 10.148 30.199l235.877-235.877L32.139 20.116zM464.261 212.087l-67.266-37.637-81.544 81.544 81.548 81.548 67.273-37.64c16.117-9.03 25.738-25.442 25.738-43.908s-9.621-34.877-25.749-43.907zM291.733 279.711L60.815 510.629c3.786.891 7.639 1.371 11.492 1.371a50.275 50.275 0 0027.31-8.07l266.965-149.372-74.849-74.847z"/>
+          <div class="buttons-container">
+            <a href="#" class="store-button">
+              <svg class="store-icon" viewBox="0 0 24 24" fill="currentColor">
+                <path d="M3,20.5V3.5C3,2.91 3.34,2.39 3.84,2.15L13.69,12L3.84,21.85C3.34,21.61 3,21.09 3,20.5M16.81,15.12L6.05,21.34L14.54,12.85L16.81,15.12M20.16,10.81C20.5,11.08 20.75,11.5 20.75,12C20.75,12.5 20.53,12.9 20.18,13.18L17.89,14.5L15.39,12L17.89,9.5L20.16,10.81M6.05,2.66L16.81,8.88L14.54,11.15L6.05,2.66Z"/>
               </svg>
-              <span class="texts">
-                <span class="text-1">GET IT ON</span>
-                <span class="text-2">Google Play</span>
-              </span>
+              <div class="store-text">
+                <span class="store-text-small">Disponible sur</span>
+                <span class="store-text-large">Google Play</span>
+              </div>
             </a>
-            <!-- bouton App Store -->
-            <a class="appstore-button" href="#">
-              <!-- remplacez ce SVG par un logo Apple si vous en avez -->
-              <svg xmlns="http://www.w3.org/2000/svg" fill="currentColor" class="icon" viewBox="0 0 384 512">
-                <path d="M318.7 268.7c-.2-36.4 16.2-63.9 51.3-83.7-19.1-27.9-47.3-43.7-83-44.3-34.9-.7-62.5 20.3-78.8 20.3-16.5 0-42.5-19.9-69.9-19.3-35.9.7-69.1 21-87.6 53.4-37.6 64.8-9.6 161.4 27 214.3 18 26.1 39.4 55.3 67.5 54.2 27.1-1.1 37.4-17.6 70-17.6 32.4 0 41.6 17.6 69.9 17.1 28-.5 45.7-26.7 63.4-52.9 19.9-29 28.2-57.2 28.4-58.7-.6-.2-54.2-20.9-54.4-82zM256.9 69c14.1-17.2 25.1-41.4 22.3-65.4-21.6 1-47.7 14.4-62.8 31.6-13.9 16.2-26 41.2-22.7 65.3 24.2 2 .48-15 63.2-31.5z"/>
+            <a href="#" class="store-button">
+              <svg class="store-icon" viewBox="0 0 24 24" fill="currentColor">
+                <path d="M18.71,19.5C17.88,20.74 17,21.95 15.66,21.97C14.32,22 13.89,21.18 12.37,21.18C10.84,21.18 10.37,21.95 9.1,22C7.79,22.05 6.8,20.68 5.96,19.47C4.25,17 2.94,12.45 4.7,9.39C5.57,7.87 7.13,6.91 8.82,6.88C10.1,6.86 11.32,7.75 12.11,7.75C12.89,7.75 14.37,6.68 15.92,6.84C16.57,6.87 18.39,7.1 19.56,8.82C19.47,8.88 17.39,10.1 17.41,12.63C17.44,15.65 20.06,16.66 20.09,16.67C20.06,16.74 19.67,18.11 18.71,19.5M13,3.5C13.73,2.67 14.94,2.04 15.94,2C16.07,3.17 15.6,4.35 14.9,5.19C14.21,6.04 13.07,6.7 11.95,6.61C11.8,5.46 12.36,4.26 13,3.5Z"/>
               </svg>
-              <span class="texts">
-                <span class="text-1">Download on the</span>
-                <span class="text-2">App Store</span>
-              </span>
+              <div class="store-text">
+                <span class="store-text-small">Télécharger sur</span>
+                <span class="store-text-large">App Store</span>
+              </div>
             </a>
           </div>
         </div>
-        <div class="card-right" style="position:relative;">
-          <img src="assets/card-illustration/WhatsApp Image 2025-04-22 at 16.51.17.jpeg" class="scatter-img img1" alt="">
-          <img src="assets/card-illustration/WhatsApp Image 2025-04-22 at 16.51.17.jpeg" class="scatter-img img2" alt="">
-          <img src="assets/card-illustration/logo-vago.png" class="scatter-img img3" alt="">
+        <div class="card-right">
+          <img src="../undefined-studio--website/assets/card-illustration/WhatsApp Image 2025-04-22 at 16.51.17.jpeg" class="scatter-img img1" alt="App Screenshot 1">
+          <img src="../undefined-studio--website/assets/card-illustration/WhatsApp Image 2025-04-22 at 16.51.17.jpeg" class="scatter-img img2" alt="App Screenshot 2">
+          <img src="../undefined-studio--website/assets/card-illustration/logo-vago.png" class="scatter-img img3" alt="Logo Vago">
         </div>
-        
       </div>
 
-      <!-- CARD 2 -->
+      <!-- Card 2 -->
       <div class="card card2">
         <div class="card-left">
           <div>
-            <h2 class="card-title">Titre 1</h2>
-            <p class="card-subtitle">Sous-titre explicatif 1</p>
+            <h2 class="card-title">NextApp</h2>
+            <p class="card-subtitle">Bientôt disponible sur vos stores favoris</p>
           </div>
-          <div>
-            <!-- bouton Google Play -->
-            <a class="playstore-button" href="#">
-              <svg xmlns="http://www.w3.org/2000/svg" fill="currentColor" class="icon" viewBox="0 0 512 512">
-                <path d="M99.617 8.057a50.191 50.191 0 00-38.815-6.713l230.932 230.933 74.846-74.846L99.617 8.057zM32.139 20.116c-6.441 8.563-10.148 19.077-10.148 30.199v411.358c0 11.123 3.708 21.636 10.148 30.199l235.877-235.877L32.139 20.116zM464.261 212.087l-67.266-37.637-81.544 81.544 81.548 81.548 67.273-37.64c16.117-9.03 25.738-25.442 25.738-43.908s-9.621-34.877-25.749-43.907zM291.733 279.711L60.815 510.629c3.786.891 7.639 1.371 11.492 1.371a50.275 50.275 0 0027.31-8.07l266.965-149.372-74.849-74.847z"/>
+          <div class="buttons-container">
+            <a href="#" class="store-button">
+              <svg class="store-icon" viewBox="0 0 24 24" fill="currentColor">
+                <path d="M3,20.5V3.5C3,2.91 3.34,2.39 3.84,2.15L13.69,12L3.84,21.85C3.34,21.61 3,21.09 3,20.5M16.81,15.12L6.05,21.34L14.54,12.85L16.81,15.12M20.16,10.81C20.5,11.08 20.75,11.5 20.75,12C20.75,12.5 20.53,12.9 20.18,13.18L17.89,14.5L15.39,12L17.89,9.5L20.16,10.81M6.05,2.66L16.81,8.88L14.54,11.15L6.05,2.66Z"/>
               </svg>
-              <span class="texts">
-                <span class="text-1">Coming soon on </span>
-                <span class="text-2">Google Play</span>
-              </span>
+              <div class="store-text">
+                <span class="store-text-small">Bientôt sur</span>
+                <span class="store-text-large">Google Play</span>
+              </div>
             </a>
-            <!-- bouton App Store -->
-            <a class="appstore-button" href="#">
-              <!-- remplacez ce SVG par un logo Apple si vous en avez -->
-              <svg xmlns="http://www.w3.org/2000/svg" fill="currentColor" class="icon" viewBox="0 0 384 512">
-                <path d="M318.7 268.7c-.2-36.4 16.2-63.9 51.3-83.7-19.1-27.9-47.3-43.7-83-44.3-34.9-.7-62.5 20.3-78.8 20.3-16.5 0-42.5-19.9-69.9-19.3-35.9.7-69.1 21-87.6 53.4-37.6 64.8-9.6 161.4 27 214.3 18 26.1 39.4 55.3 67.5 54.2 27.1-1.1 37.4-17.6 70-17.6 32.4 0 41.6 17.6 69.9 17.1 28-.5 45.7-26.7 63.4-52.9 19.9-29 28.2-57.2 28.4-58.7-.6-.2-54.2-20.9-54.4-82zM256.9 69c14.1-17.2 25.1-41.4 22.3-65.4-21.6 1-47.7 14.4-62.8 31.6-13.9 16.2-26 41.2-22.7 65.3 24.2 2 .48-15 63.2-31.5z"/>
+            <a href="#" class="store-button">
+              <svg class="store-icon" viewBox="0 0 24 24" fill="currentColor">
+                <path d="M18.71,19.5C17.88,20.74 17,21.95 15.66,21.97C14.32,22 13.89,21.18 12.37,21.18C10.84,21.18 10.37,21.95 9.1,22C7.79,22.05 6.8,20.68 5.96,19.47C4.25,17 2.94,12.45 4.7,9.39C5.57,7.87 7.13,6.91 8.82,6.88C10.1,6.86 11.32,7.75 12.11,7.75C12.89,7.75 14.37,6.68 15.92,6.84C16.57,6.87 18.39,7.1 19.56,8.82C19.47,8.88 17.39,10.1 17.41,12.63C17.44,15.65 20.06,16.66 20.09,16.67C20.06,16.74 19.67,18.11 18.71,19.5M13,3.5C13.73,2.67 14.94,2.04 15.94,2C16.07,3.17 15.6,4.35 14.9,5.19C14.21,6.04 13.07,6.7 11.95,6.61C11.8,5.46 12.36,4.26 13,3.5Z"/>
               </svg>
-              <span class="texts">
-                <span class="text-1">Coming soon on</span>
-                <span class="text-2">App Store</span>
-              </span>
+              <div class="store-text">
+                <span class="store-text-small">Bientôt sur</span>
+                <span class="store-text-large">App Store</span>
+              </div>
             </a>
           </div>
         </div>
         <div class="card-right">
-          <video src="Blue Modern New App Promotion Business Animated Instagram Reel .mp4" autoplay muted loop></video>
-        </div>
-        
-      </div>
-
-      <!-- CARD 3 -->
-      <div class="card card3">
-        <div class="card-left">
-          <h2 class="card-title">Titre 3</h2>
-          <p class="card-subtitle">Sous-titre explicatif 3</p>
-        </div>
-        <div class="card-right">
-          <img src="image3.jpg" alt="Image de la carte 3">
+          <video src="../undefined-studio--website/Blue Modern New App Promotion Business Animated Instagram Reel .mp4" autoplay muted loop></video>
         </div>
       </div>
 
     </div>
   </section>
-  
-  
 
-  
   <script>
-    window.addEventListener("load", function() {
-      // Nettoyer tous les anciens ScrollTriggers
-      ScrollTrigger.getAll().forEach(trigger => trigger.kill());
-      
-      // --- Animation d'intro de la section hero ---
-      const tlIntro = gsap.timeline();
-      const line1Letters = document.querySelectorAll("#line1 .letter");
-      tlIntro.to(line1Letters, { duration: 0.8, opacity: 1, y: 0, stagger: 0.1, ease: "power2.out" });
-      const line2Letters = document.querySelectorAll("#line2 .letter");
-      tlIntro.to(line2Letters, { duration: 0.8, opacity: 1, y: 0, stagger: 0.1, ease: "power2.out" }, "-=0.3");
-      const square = document.querySelector("#line2 .square");
-      tlIntro.to(square, {
-        duration: 0.6,
-        opacity: 1,
-        scale: 1,
-        ease: "bounce.out",
-        onComplete: function() {
-          gsap.to(document.body, { duration: 2, background: "none", ease: "power2.inOut" });
+    gsap.registerPlugin(ScrollTrigger);
+
+    // Loading Screen Management
+    let loadingProgress = 0;
+    const loadingBar = document.getElementById('loadingProgress');
+    const loadingScreen = document.getElementById('loadingScreen');
+    
+    function updateLoadingProgress(percent) {
+      loadingProgress = percent;
+      loadingBar.style.width = percent + '%';
+    }
+    
+    function hideLoadingScreen() {
+      gsap.to(loadingScreen, {
+        opacity: 0,
+        duration: 1.2,
+        ease: "power2.out",
+        onComplete: () => {
+          loadingScreen.style.display = 'none';
+          initAnimations();
         }
-      }, "-=0.3");
-      tlIntro.from("#line3", { duration: 0.8, opacity: 0, y: 30, ease: "power2.out" }, "-=0.4");
-      gsap.to("#circleTextContainer", { rotation: 360, duration: 20, ease: "none", repeat: -1 });
-      
-      const circleContainer = document.getElementById("circleTextContainer");
-      circleContainer.addEventListener("mouseenter", function() {
-        gsap.to("#circleTextContainer svg", { duration: 0.5, scale: 1.1, ease: "power2.out" });
       });
-      circleContainer.addEventListener("mouseleave", function() {
-        gsap.to("#circleTextContainer svg", { duration: 0.5, scale: 1, ease: "power2.out" });
-      });
-      
-      // --- Timeline de scroll pour la section hero ---
-      gsap.registerPlugin(ScrollTrigger);
-      gsap.timeline({
-        scrollTrigger: {
-          trigger: ".hero",
-          start: "top top",
-          end: "bottom+=140%",
-          scrub: true,
-          pin: true,
-          pinSpacing: true,
-          invalidateOnRefresh: true
+    }
+    
+    // Simulation du chargement plus fluide
+    function simulateLoading() {
+      const interval = setInterval(() => {
+        loadingProgress += Math.random() * 8 + 3;
+        if (loadingProgress >= 100) {
+          loadingProgress = 100;
+          updateLoadingProgress(100);
+          clearInterval(interval);
+          setTimeout(hideLoadingScreen, 800);
+        } else {
+          updateLoadingProgress(loadingProgress);
         }
-      })
-      .to("#line1", { y: -150, opacity: 0, ease: "power2.in" }, 0)
-      .to("#line2", { x: -150, opacity: 0, ease: "power2.in" }, 0)
-      .to(".circle-wrapper", { x: 150, opacity: 0, ease: "power2.in" }, 0)
-      .fromTo("#line3", { y: 0, opacity: 1 }, { y: 100, opacity: 0, ease: "power2.in", immediateRender: false }, 0);
+      }, 120);
+    }
+
+    // Variables globales pour YOU CAN
+    const wordsList = [
+      'inspirent.', 'simplifient.', 'connectent.', 'révolutionnent.',
+      'optimisent.', 'automatisent.', 'protègent.', 'stimulent.',
+      'transforment.', 'dynamisent.', 'facilitent.', 'catalysent.',
+      'modernisent.', 'accélèrent.', 'renforcent.', 'fluidifient.',
+      'harmonisent.', 'bousculent.', 'innovent.', 'valorisent.',
+      'libèrent.', 'unissent.'
+    ];
+
+    // Fonction principale d'initialisation des animations
+    function initAnimations() {
       
-      // --- ScrollTrigger pour le bouton ---
-      ScrollTrigger.create({
+    // Animation d'intro HERO ULTRA
+    const tlHero = gsap.timeline();
+    
+    // Animation explosive des lettres UNDE
+    tlHero.to("#line1 span", {
+      duration: 1.2,
+      opacity: 1,
+      y: 0,
+      rotationX: 0,
+      stagger: 0.15,
+      ease: "back.out(2)"
+    });
+    
+    // Animation explosive des lettres FINED
+    tlHero.to("#line2 .letter", {
+      duration: 1.2,
+      opacity: 1,
+      y: 0,
+      rotationX: 0,
+      stagger: 0.15,
+      ease: "back.out(2)"
+    }, "-=0.6");
+    
+    // Animation ultra du carré avec glow
+    tlHero.to("#line2 .square", {
+      duration: 1,
+      opacity: 1,
+      scale: 1,
+      rotation: 0,
+      ease: "elastic.out(1, 0.5)"
+    }, "-=0.4");
+    
+    // Animation de "studio"
+    tlHero.to("#line3", {
+      duration: 1,
+      opacity: 1,
+      y: 0,
+      ease: "power3.out"
+    }, "-=0.5");
+    
+    // Animation du cercle (apparition + rotation)
+    tlHero.to("#circleWrapper", {
+      duration: 1.5,
+      opacity: 1,
+      scale: 1,
+      ease: "power3.out"
+    }, "-=0.8");
+    
+    // Rotation continue du cercle
+    gsap.to("#circleContainer", {
+      rotation: 360,
+      duration: 25,
+      ease: "none",
+      repeat: -1
+    });
+
+    // Pin HERO avec parallax ultra
+    gsap.timeline({
+      scrollTrigger: {
         trigger: ".hero",
-        start: "bottom top",
-        onEnter: function() {
-          gsap.to(".button-image", { width: "185px", duration: 0.5, ease: "power2.out" });
-          gsap.to(".button-content", { padding: "10px 5px", duration: 0.5, ease: "power2.out" });
-          gsap.to(".button-content svg", { marginLeft: "5px", duration: 0.5, ease: "power2.out" });
-          document.querySelector(".button-content span").textContent = "Plus";
-        },
-        onLeaveBack: function() {
-          gsap.to(".button-image", { width: "0px", duration: 0.5, ease: "power2.out" });
-          gsap.to(".button-content", { padding: "10px 15px", duration: 0.5, ease: "power2.out" });
-          gsap.to(".button-content svg", { marginLeft: "10px", duration: 0.5, ease: "power2.out" });
-          document.querySelector(".button-content span").textContent = "Nous contacter";
-        }
-      });
-      
-      // --- ScrollTrigger pour la section YOU CAN ---
-      // Pin le texte "Des apps qui" au centre pendant le scroll de la section YOU CAN.
-      ScrollTrigger.create({
-        trigger: ".you-can-section",
-        start: "center center",
-        end: "bottom center",
-        pin: ".pinned-text",
-        pinSpacing: false,
-      });
-      
-      // Pour chaque élément de la liste de la section YOU CAN.
-      gsap.utils.toArray(".youcan-list li").forEach(li => {
-        ScrollTrigger.create({
-          trigger: li,
-          start: "top center",
-          end: "bottom center",
-          toggleActions: "play none reverse none",
-          onEnter: () => gsap.to(li, { opacity: 1, filter: "brightness(1.5)", duration: 0.3 }),
-          onLeave: () => gsap.to(li, { opacity: 0.2, filter: "brightness(1)", duration: 0.3 }),
-          onEnterBack: () => gsap.to(li, { opacity: 1, filter: "brightness(1.5)", duration: 0.3 }),
-          onLeaveBack: () => gsap.to(li, { opacity: 0.2, filter: "brightness(1)", duration: 0.3 })
+        start: "top top",
+        end: "bottom top",
+        scrub: 1.5,
+        pin: true,
+        pinSpacing: true
+      }
+    })
+    .to(".hero-content", { y: -150, opacity: 0.6, scale: 0.9, ease: "power2.inOut" })
+    .to(".grid-bg", { opacity: 0.3, ease: "power2.inOut" }, 0);
+
+    // Section YOU CAN avec alignement parfait initial et final
+    const wordsContainer = document.getElementById('scrollingWordsList');
+    const wordItems = document.querySelectorAll('.word-item');
+    
+    // Pin de la section YOU CAN avec alignement initial ET final parfait
+    ScrollTrigger.create({
+      trigger: ".you-can-section",
+      start: "top top",
+      end: "bottom bottom",
+      pin: ".you-can-container",
+      pinSpacing: false,
+      onUpdate: (self) => {
+        const progress = self.progress;
+        
+        // Calcul des dimensions
+        const containerHeight = document.querySelector('.words-container').offsetHeight;
+        const containerCenter = containerHeight / 2;
+        const wordHeight = wordItems[0] ? wordItems[0].offsetHeight : 120;
+        const totalWords = wordItems.length;
+        
+        // Distance totale à parcourir
+        const totalScrollDistance = (totalWords - 1) * wordHeight;
+        
+        // Position actuelle du scroll
+        const currentScrollY = progress * totalScrollDistance;
+        
+        // Animation du conteneur (sens normal)
+        gsap.to(wordsContainer, {
+          y: -currentScrollY + 'px',
+          duration: 0.2,
+          ease: "power2.out"
         });
+        
+        // Gestion des états des mots - alignement ultra précis
+        
+        wordItems.forEach((word, index) => {
+          // Position réelle du mot dans la viewport
+          const wordRect = word.getBoundingClientRect();
+          const wordsContainerRect = document.querySelector('.words-container').getBoundingClientRect();
+          const wordCenterInContainer = wordRect.top + wordRect.height / 2 - wordsContainerRect.top;
+          
+          // Distance par rapport au centre du conteneur (ligne de "des apps qui")
+          const distanceFromCenter = Math.abs(wordCenterInContainer - containerCenter);
+          
+          // Reset des classes
+          word.classList.remove('active', 'visible');
+          
+          // Mot parfaitement aligné avec "des apps qui" - tolérance ultra faible
+          if (distanceFromCenter < 15) {
+            word.classList.add('active');
+          }
+          // Mots proches mais pas alignés
+          else if (distanceFromCenter < wordHeight * 0.6) {
+            word.classList.add('visible');
+          }
+        });
+      },
+      onEnter: () => {
+        // S'assurer du bon état initial - vérification de l'alignement réel
+        setTimeout(() => {
+          const containerCenter = document.querySelector('.words-container').offsetHeight / 2;
+          wordItems.forEach((word, index) => {
+            const wordRect = word.getBoundingClientRect();
+            const wordsContainerRect = document.querySelector('.words-container').getBoundingClientRect();
+            const wordCenterInContainer = wordRect.top + wordRect.height / 2 - wordsContainerRect.top;
+            const distanceFromCenter = Math.abs(wordCenterInContainer - containerCenter);
+            
+            word.classList.remove('active', 'visible');
+            if (distanceFromCenter < 20) {
+              word.classList.add('active');
+            } else if (distanceFromCenter < 100) {
+              word.classList.add('visible');
+            }
+          });
+        }, 100);
+      }
+    });
+
+    // SECTION MOTION DESIGN avec animation word par word
+    ScrollTrigger.create({
+      trigger: ".motion-section",
+      start: "top top",
+      end: "+=300%",
+      pin: true,
+      pinSpacing: true,
+      onUpdate: (self) => {
+        const progress = self.progress;
+        const sloganWords = document.querySelectorAll('.slogan-word');
+        
+        // Animation des mots du slogan de manière séquentielle
+        gsap.to("#slogan", {
+            opacity: 1, 
+          duration: 0.3,
+          ease: "power2.out"
+        });
+        
+        // Animation word by word basée sur le progress
+        sloganWords.forEach((word, index) => {
+          const wordProgress = Math.max(0, Math.min(1, (progress * 4) - index * 0.5));
+          
+          if (wordProgress > 0) {
+            word.classList.add('animate');
+          } else {
+            word.classList.remove('animate');
+          }
+        });
+        
+        // Animation des formes avec délai après le texte - commence à 70% du scroll
+        if (progress > 0.7) {
+          const shapesProgress = (progress - 0.7) / 0.3; // Normalise à 0-1
+          const shapes = document.querySelectorAll('.shape');
+          
+          shapes.forEach((shape, i) => {
+            const pairIndex = Math.floor(i / 2); // 2 formes par paire
+            const totalPairs = Math.ceil(shapes.length / 2);
+            const pairProgress = Math.max(0, Math.min(1, (shapesProgress * totalPairs) - pairIndex));
+            
+            gsap.to(shape, {
+              opacity: pairProgress * 0.9,
+              scale: pairProgress,
+              duration: 0.4,
+              ease: "back.out(1.8)"
+            });
+          });
+        }
+      }
+    });
+
+         // Génération des formes style autocollants
+     function createFloatingShapes() {
+       const container = document.getElementById('floatingShapes');
+       const shapes = ['circle', 'square', 'triangle', 'diamond', 'star'];
+
+       for (let i = 0; i < 12; i++) {
+         const shape = document.createElement('div');
+         const shapeType = shapes[Math.floor(Math.random() * shapes.length)];
+         const size = Math.random() * 180 + 120;
+         
+         shape.className = `shape ${shapeType}`;
+         shape.style.width = size + 'px';
+         shape.style.height = size + 'px';
+         
+         // Positionnement autour du texte, pas en dessous
+         let left, top;
+         if (i % 4 === 0) {
+           // Côté gauche
+           left = Math.random() * 25 + 5;
+           top = Math.random() * 80 + 10;
+         } else if (i % 4 === 1) {
+           // Côté droit  
+           left = Math.random() * 25 + 70;
+           top = Math.random() * 80 + 10;
+         } else if (i % 4 === 2) {
+           // En haut
+           left = Math.random() * 60 + 20;
+           top = Math.random() * 25 + 5;
+         } else {
+           // En bas (mais pas trop bas)
+           left = Math.random() * 60 + 20;
+           top = Math.random() * 25 + 70;
+         }
+         
+         shape.style.left = left + '%';
+         shape.style.top = top + '%';
+        
+         // Initialise invisible
+         gsap.set(shape, { opacity: 0, scale: 0 });
+         
+         container.appendChild(shape);
+
+         // Animation flottante douce
+         gsap.to(shape, {
+           x: (Math.random() - 0.5) * 100,
+           y: (Math.random() - 0.5) * 100,
+           rotation: (Math.random() - 0.5) * 20,
+           duration: Math.random() * 4 + 3,
+           repeat: -1,
+           yoyo: true,
+           ease: "sine.inOut"
+         });
+      }
+    }
+
+    // SECTION CARDS ULTRA avec empilement
+    const cards = document.querySelectorAll('.card');
+    
+    // Pin des cards avec empilement
+    ScrollTrigger.create({
+      trigger: ".cards-section",
+      start: "top top",
+      end: "bottom bottom",
+      pin: ".cards-container",
+      pinSpacing: false,
+      onUpdate: (self) => {
+        const progress = self.progress;
+        const totalCards = cards.length;
+        
+        cards.forEach((card, index) => {
+          const cardProgress = Math.max(0, Math.min(1, (progress * totalCards) - index));
+          
+          gsap.to(card, {
+            y: (1 - cardProgress) * window.innerHeight,
+            rotationX: (1 - cardProgress) * 15,
+            scale: 0.8 + (cardProgress * 0.2),
+            duration: 0.3,
+            ease: "power2.out"
+          });
+          
+          // Z-index pour l'empilement
+          card.style.zIndex = index + 1;
+        });
+      }
+    });
+
+    // SECTION TEXT ANIMATION PRO STYLE
+    function initTextAnimationSection() {
+      const textSequence = document.getElementById('textSequence');
+      
+      // Timeline principale avec scroll horizontal
+      ScrollTrigger.create({
+        trigger: ".text-animation-section",
+        start: "top top",
+        end: "bottom bottom",
+        pin: ".text-animation-container",
+        pinSpacing: false,
+        scrub: 1,
+        onUpdate: (self) => {
+          const progress = self.progress;
+          animateTextSequence(progress);
+        }
       });
       
-     
-     
-     
-     
-     
-      // --- ScrollTrigger pour la section Cards ---
-      gsap.timeline({
-        scrollTrigger: {
-          trigger: ".cards-section",
-          start: "top top",
-          end: "+=1500", // Ajustez selon la durée du scroll désirée
-          scrub: true,
-          pin: true,
-          invalidateOnRefresh: true,
-          markers: false
+      function animateTextSequence(progress) {
+        // Scroll horizontal fluide - 3 sections avec décalage initial
+        const translateX = 20 + (progress * -220); // Commence à 20vw (plus décalé) puis scroll 220vw
+        gsap.to(textSequence, {
+          x: `${translateX}vw`,
+          duration: 0.3,
+          ease: "power2.out"
+        });
+        
+        // Intro (0-40%) - Commence plus tôt
+        if (progress <= 0.40) {
+          animateIntro(progress / 0.40);
         }
-      })
-      // Première carte : glisse de 150px en dessous à sa position finale (0)
-      .fromTo(".cards-container .card:nth-child(1)",
-        { y: 150, opacity: 1 },
-        { y: -20, opacity: 1, ease: "power2.out" }
-      )
-      // Deuxième carte : glisse de 150px en dessous à y = -50 pour un léger empilement
-      .fromTo(".cards-container .card:nth-child(2)",
-        { y: 150, opacity: 1 },
-        { y: -690, opacity: 1, ease: "power2.out" }, "<0.4"
-      )
-      // Troisième carte : glisse de 150px en dessous à y = -100
-      .fromTo(".cards-container .card:nth-child(3)",
-        { y: 150, opacity: 1 },
-        { y: -1360, opacity: 1, ease: "power2.out" }, "<0.4"
+        
+        // Middle (35-65%)
+        if (progress > 0.35 && progress <= 0.65) {
+          animateMiddle((progress - 0.35) / 0.3);
+        }
+        
+        // End (65-90%) - On arrête à 90% pour bien voir la fin
+        if (progress > 0.65 && progress <= 0.90) {
+          animateEnd((progress - 0.65) / 0.25);
+        }
+      }
+      
+      // Animation Intro
+      function animateIntro(progress) {
+        const words = document.querySelectorAll('.intro-text .word');
+        const shapes = document.querySelectorAll('.intro-shape');
+        
+        // Apparition immédiate dès le début
+        const adjustedProgress = progress;
+        
+        // Animation des mots avec stagger
+        words.forEach((word, index) => {
+          const delay = parseFloat(word.dataset.delay);
+          const wordProgress = Math.max(0, Math.min(1, (adjustedProgress * 2) - delay));
+          
+          gsap.to(word, {
+            opacity: wordProgress,
+            y: (1 - wordProgress) * 100,
+            rotation: (1 - wordProgress) * 10,
+            duration: 0.4,
+            ease: "power3.out"
+          });
+          
+          // Underline animation
+          if (wordProgress > 0.5) {
+            word.classList.add('visible');
+          }
+        });
+        
+        // Shapes animation - apparaissent en même temps que le texte
+        shapes.forEach((shape, index) => {
+          const shapeProgress = Math.max(0, Math.min(1, (adjustedProgress * 1.5) - index * 0.1));
+          
+          gsap.to(shape, {
+            opacity: shapeProgress * 0.8,
+            scale: shapeProgress,
+            rotation: index === 1 ? 45 : 0,
+            duration: 0.6,
+            ease: "back.out(1.7)"
+          });
+        });
+      }
+      
+      // Animation Middle
+      function animateMiddle(progress) {
+        const transformText = document.querySelector('.transform-text');
+        const transformShapes = document.querySelectorAll('.transform-shape');
+        const secondaryWords = document.querySelectorAll('.secondary-word');
+        
+        // Texte principal
+        gsap.to(transformText, {
+          opacity: Math.min(1, progress * 2),
+          scale: 0.5 + (Math.min(1, progress * 1.5) * 0.5),
+          duration: 0.3,
+          ease: "power3.out"
+        });
+        
+        // Shapes qui tournent
+        if (progress > 0.3) {
+          transformShapes.forEach((shape, index) => {
+            const shapeProgress = Math.max(0, Math.min(1, (progress - 0.3) * 2));
+            
+            gsap.to(shape, {
+              opacity: shapeProgress * 0.9,
+              scale: shapeProgress,
+              rotation: shapeProgress * (180 + index * 45),
+              duration: 0.4,
+              ease: "back.out(1.7)"
+            });
+          });
+        }
+        
+        // Mots secondaires
+        if (progress > 0.5) {
+          secondaryWords.forEach((word, index) => {
+            const wordProgress = Math.max(0, Math.min(1, (progress - 0.5) * 3));
+            
+            gsap.to(word, {
+              opacity: wordProgress,
+              x: (1 - wordProgress) * -50,
+              duration: 0.4,
+              ease: "power3.out"
+            });
+          });
+        }
+      }
+      
+      // Animation End
+      function animateEnd(progress) {
+        const finalWords = document.querySelectorAll('.final-word');
+        const impactRing = document.querySelector('.impact-ring');
+        const particlesContainer = document.querySelector('.impact-particles');
+        
+        // Animation des mots finaux
+        finalWords.forEach((word, index) => {
+          const wordProgress = Math.max(0, Math.min(1, (progress * 3) - index * 0.3));
+          
+          gsap.to(word, {
+            opacity: wordProgress,
+            scale: 0.8 + (wordProgress * 0.2),
+            rotation: (1 - wordProgress) * -5,
+            duration: 0.4,
+            ease: "back.out(1.5)"
+          });
+        });
+        
+        // Impact ring
+        if (progress > 0.6) {
+          gsap.to(impactRing, {
+            opacity: 0.6,
+            scale: 1.2,
+            duration: 0.8,
+            ease: "power2.out"
+          });
+          
+          // Créer des particules d'impact
+          createImpactParticles(particlesContainer, progress);
+        }
+      }
+      
+      function createImpactParticles(container, progress) {
+        if (container.children.length > 15) return;
+        
+        for (let i = 0; i < 5; i++) {
+          const particle = document.createElement('div');
+          particle.className = 'impact-particle';
+          
+          const angle = (i / 5) * Math.PI * 2;
+          const distance = 150 + Math.random() * 100;
+          
+          particle.style.left = '50%';
+          particle.style.top = '50%';
+          
+          container.appendChild(particle);
+          
+          gsap.fromTo(particle,
+            { 
+              opacity: 1,
+              scale: 1,
+              x: 0,
+              y: 0
+            },
+            {
+              opacity: 0,
+              scale: 0.5,
+              x: Math.cos(angle) * distance,
+              y: Math.sin(angle) * distance,
+              duration: 1.2,
+              ease: "power2.out",
+              onComplete: () => particle.remove()
+            }
+          );
+        }
+      }
+    }
+
+         // Initialisation
+     createFloatingShapes();
+     initTextAnimationSection();
+
+      // Animation Contact Section
+      gsap.fromTo(".contact-title", 
+        { opacity: 0, y: 50 },
+        { 
+          opacity: 1, 
+          y: 0, 
+          duration: 1.2,
+          ease: "power3.out",
+          scrollTrigger: {
+            trigger: ".contact-section",
+            start: "top 80%",
+            once: true
+          }
+        }
+      );
+
+      gsap.fromTo(".contact-form", 
+        { opacity: 0, y: 50 },
+        { 
+          opacity: 1, 
+          y: 0, 
+          duration: 1.2,
+          delay: 0.3,
+          ease: "power3.out",
+          scrollTrigger: {
+            trigger: ".contact-section",
+            start: "top 80%",
+            once: true
+          }
+        }
+      );
+
+      // Animation Footer
+      const footerSections = document.querySelectorAll('.footer-section');
+      gsap.fromTo(footerSections,
+        { opacity: 0, y: 30 },
+        { 
+          opacity: 1, 
+          y: 0, 
+          duration: 0.8,
+          stagger: 0.1,
+          ease: "power2.out",
+          scrollTrigger: {
+            trigger: ".footer",
+            start: "top 90%",
+            once: true
+          }
+        }
+      );
+
+      gsap.fromTo(".footer-logo",
+        { opacity: 0, scale: 0.8 },
+        { 
+          opacity: 1, 
+          scale: 1, 
+          duration: 1.2,
+          ease: "elastic.out(1, 0.5)",
+          scrollTrigger: {
+            trigger: ".footer",
+            start: "top 90%",
+            once: true
+          }
+        }
       );
       
-    }, { once: true });
+      // Animation du titre avec les lettres qui se révèlent
+      const contactTitle = document.querySelector('.contact-title');
+      if (contactTitle) {
+        const text = contactTitle.textContent;
+        contactTitle.innerHTML = text.split('').map(char => 
+          char === ' ' ? ' ' : `<span class="letter">${char}</span>`
+        ).join('');
+        
+        gsap.fromTo(".contact-title .letter",
+          { opacity: 0, y: 50, rotationX: -90 },
+          { 
+            opacity: 1, 
+            y: 0,
+            rotationX: 0,
+            duration: 0.8,
+            stagger: 0.03,
+            ease: "back.out(1.7)",
+            scrollTrigger: {
+              trigger: ".contact-section",
+              start: "top 80%",
+              once: true
+            }
+          }
+        );
+      }
+
+      // Gestion du formulaire
+      const form = document.querySelector('.contact-form');
+      form.addEventListener('submit', (e) => {
+        e.preventDefault();
+        
+        // Animation du bouton
+        const button = form.querySelector('.submit-btn');
+        gsap.to(button, {
+          scale: 0.95,
+          duration: 0.1,
+          yoyo: true,
+          repeat: 1,
+          ease: "power2.inOut"
+        });
+        
+        // Ici vous pouvez ajouter la logique d'envoi du formulaire
+        console.log('Formulaire soumis');
+      });
+
+      // Animation des inputs au focus
+      const inputs = document.querySelectorAll('.form-group input');
+      inputs.forEach(input => {
+        input.addEventListener('focus', () => {
+          gsap.to(input.parentElement, {
+            scale: 1.02,
+            duration: 0.3,
+            ease: "power2.out"
+          });
+        });
+        
+        input.addEventListener('blur', () => {
+          gsap.to(input.parentElement, {
+            scale: 1,
+            duration: 0.3,
+            ease: "power2.out"
+          });
+        });
+      });
+
+      // Refresh après chargement
+      ScrollTrigger.refresh();
+
+      // Resize handler
+      window.addEventListener('resize', () => {
+        ScrollTrigger.refresh();
+      });
+    }
+
+    // Démarrage du loading au chargement de la page
+    window.addEventListener('load', () => {
+      simulateLoading();
+    });
+    
+    // Démarrage immédiat si le DOM est déjà chargé
+    if (document.readyState === 'complete') {
+      simulateLoading();
+    }
   </script>
 
+  <!-- Contact Section -->
+  <section class="contact-section">
+    <div class="contact-container">
+      <h2 class="contact-title">Transformons vos idées en réalité</h2>
+      
+      <form class="contact-form">
+        <div class="form-row">
+          <div class="form-group">
+            <input type="text" id="prenom" name="prenom" required placeholder=" ">
+            <label for="prenom">Prénom</label>
+          </div>
+          <div class="form-group">
+            <input type="text" id="nom" name="nom" required placeholder=" ">
+            <label for="nom">Nom</label>
+          </div>
+        </div>
+        
+        <div class="form-row">
+          <div class="form-group">
+            <input type="email" id="email" name="email" required placeholder=" ">
+            <label for="email">Email</label>
+          </div>
+          <div class="form-group">
+            <input type="tel" id="telephone" name="telephone" required placeholder=" ">
+            <label for="telephone">Téléphone</label>
+          </div>
+        </div>
+        
+        <div class="form-group full-width">
+          <input type="text" id="entreprise" name="entreprise" placeholder=" ">
+          <label for="entreprise">Entreprise (facultatif)</label>
+        </div>
+        
+        <button type="submit" class="submit-btn">
+          <span>Envoyez votre message</span>
+        </button>
+      </form>
+    </div>
+  </section>
 
-<script>// --- Animations pour la Nouvelle Section ---
+  <!-- Footer -->
+  <footer class="footer">
+    <div class="footer-container">
+      <div class="footer-left">
+        <div class="footer-section">
+          <h4>Navigation</h4>
+          <ul>
+            <li><a href="#hero">Accueil</a></li>
+            <li><a href="#services">Services</a></li>
+            <li><a href="#portfolio">Portfolio</a></li>
+            <li><a href="#contact">Contact</a></li>
+          </ul>
+        </div>
+        
+        <div class="footer-section">
+          <h4>Contact</h4>
+          <ul>
+            <li><a href="mailto:contact@undefined-studio.com">contact@undefined-studio.com</a></li>
+            <li><a href="tel:+33600000000">+33 6 00 00 00 00</a></li>
+            <li>Paris, France</li>
+          </ul>
+        </div>
+        
+        <div class="footer-section">
+          <h4>Suivez-nous</h4>
+          <ul>
+            <li><a href="#">LinkedIn</a></li>
+            <li><a href="#">Instagram</a></li>
+            <li><a href="#">Twitter</a></li>
+          </ul>
+        </div>
+      </div>
+      
+      <div class="footer-right">
+        <div class="footer-logo">UNDEFINED<br>STUDIO</div>
+      </div>
+      
+      <div class="footer-bottom">
+        <p>© 2024 UNDEFINED STUDIO. ALL RIGHTS RESERVED.</p>
+      </div>
+    </div>
+  </footer>
 
-  // Sélection des éléments
-  const newSection = document.querySelector('.new-section');
-  const newHeading = document.querySelector('#newHeading');
-  const newHeadingSpans = newHeading.querySelectorAll('span');
-  const rowElementsContainer = document.querySelector('.new-section .row');
-  const rowItems = document.querySelectorAll('.new-section .row .item'); // Sélectionne l'image et les 3 cartes
-  
-  // 1. Animation d'entrée du Titre
-  const tlHeading = gsap.timeline({
-    scrollTrigger: {
-      trigger: newSection,
-      start: "top 70%", // Démarre quand le haut de la section est à 70% du viewport
-      end: "top 30%", // Termine quand le haut de la section est à 30%
-      // markers: true, // Décommentez pour le débogage
-      toggleActions: "play none none reverse", // Joue à l'entrée, revient en arrière à la sortie
-    }
-  });
-  
-  tlHeading.to(newHeadingSpans, {
-    opacity: 1,
-    y: 0,
-    stagger: 0.1, // Délai entre chaque mot
-    duration: 0.8,
-    ease: "power2.out" // Une accélération douce
-  });
-  
-  // 2. Pinning du Titre et Scroll vers le haut
-  ScrollTrigger.create({
-    trigger: newHeading,
-    start: "top 30%", // Commence à pinner quand le haut du titre atteint 30% du viewport
-    endTrigger: rowElementsContainer, // Le pin dure jusqu'à ce que le conteneur de la rangée commence
-    end: "top 80%", // Se termine quand le haut de la rangée atteint 80% (laisse de l'espace)
-    pin: newHeading, // Élément à pinner
-    pinSpacing: false, // Ne pas ajouter d'espace après le pin
-    // markers: {startColor: "blue", endColor: "blue"}, // Décommentez pour le débogage
-  });
-  
-  // 3. Animation d'entrée et Pinning de la rangée (Image + Cartes)
-  const tlRow = gsap.timeline({
-    scrollTrigger: {
-      trigger: rowElementsContainer,
-      start: "top center", // Démarre quand le haut de la rangée atteint le centre
-      end: "+=100%", // Pinner pendant une hauteur équivalente à 100% du viewport
-      scrub: 0.5, // Lissage du scroll
-      pin: rowElementsContainer, // Pinner la rangée entière
-      pinSpacing: true, // Ajouter de l'espace pour le contenu suivant
-      invalidateOnRefresh: true, // Recalculer au redimensionnement
-      // markers: {startColor: "red", endColor: "red"}, // Décommentez pour le débogage
-    }
-  });
-  
-  // Animation d'entrée de la rangée (fade in + léger slide up)
-  tlRow.to(rowElementsContainer, {
-    opacity: 1,
-    y: 0, // Position finale
-    duration: 0.5,
-    ease: "power1.out"
-  }, 0); // Temps 0 de la timeline tlRow
-  
-  // Animation d'entrée STAGGERED pour les items (image + cartes) avec effet bounce
-  tlRow.to(rowItems, {
-    opacity: 1,
-    y: 0, // Position finale
-    stagger: 0.15, // Délai entre chaque item
-    duration: 0.8,
-    ease: "back.out(1.7)", // Effet de rebond
-  }, 0.2); // Commence légèrement après l'apparition du conteneur
-  
-  // Optionnel: Ajouter une légère animation pendant le pin (subtil parallax ou autre)
-  // tlRow.to(rowItems, { y: -20, stagger: 0.05, ease: "none" }, 0); // Exemple: léger décalage vers le haut pendant le scroll
-  
-  
-  // Assurez-vous que ScrollTrigger se rafraîchit après le chargement de tout
-  ScrollTrigger.refresh();
-  
-  </script>
 </body>
-</html>
+</html> 
