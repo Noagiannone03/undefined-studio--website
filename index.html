@@ -63,164 +63,53 @@
       left: 0;
       width: 100%;
       height: 100%;
-      background: radial-gradient(ellipse at center, #111111 0%, #000000 100%);
+      background: #000000;
       z-index: 9999;
       display: flex;
       align-items: center;
       justify-content: center;
       opacity: 1;
-      transition: opacity 0.8s ease-out;
-      overflow: hidden;
+      transition: opacity 0.6s ease-out;
     }
     
-    .loading-screen::before {
-      content: '';
-      position: absolute;
-      top: 0;
-      left: 0;
-      width: 100%;
-      height: 100%;
-      background: 
-        linear-gradient(90deg, rgba(0,255,136,0.05) 1px, transparent 1px),
-        linear-gradient(rgba(0,255,136,0.05) 1px, transparent 1px);
-      background-size: 50px 50px;
-      animation: gridMove 20s linear infinite;
-      opacity: 0.6;
-    }
-    
-    @keyframes gridMove {
-      0% { transform: translate(0, 0); }
-      100% { transform: translate(50px, 50px); }
-    }
     
     .loading-container {
       text-align: center;
-      position: relative;
-      z-index: 2;
     }
     
     .loading-logo {
       font-family: 'Space Grotesk', sans-serif;
-      font-size: clamp(4rem, 10vw, 8rem);
-      font-weight: 900;
-      color: var(--text-white);
-      margin-bottom: 4rem;
-      letter-spacing: 0.3em;
-      position: relative;
-    }
-    
-    .loading-letter {
-      display: inline-block;
+      font-size: 2rem;
+      font-weight: 600;
+      color: #ffffff;
+      margin-bottom: 2rem;
+      letter-spacing: -1px;
       opacity: 0;
-      transform: translateY(100px) rotateX(90deg);
-      animation: modernLetterReveal 2s ease-out infinite;
-      text-shadow: 0 0 20px rgba(0,255,136,0.3);
-      position: relative;
+      animation: fadeIn 1s ease-out forwards;
     }
     
-    .loading-letter::after {
-      content: attr(data-letter);
-      position: absolute;
-      top: 0;
-      left: 0;
-      color: var(--accent-green);
-      opacity: 0;
-      animation: glowReveal 2s ease-out infinite;
-    }
-    
-    .loading-letter:nth-child(1) { animation-delay: 0s; }
-    .loading-letter:nth-child(2) { animation-delay: 0.1s; }
-    .loading-letter:nth-child(3) { animation-delay: 0.2s; }
-    .loading-letter:nth-child(4) { animation-delay: 0.3s; }
-    .loading-letter:nth-child(5) { animation-delay: 0.4s; }
-    .loading-letter:nth-child(6) { animation-delay: 0.5s; }
-    .loading-letter:nth-child(7) { animation-delay: 0.6s; }
-    .loading-letter:nth-child(8) { animation-delay: 0.7s; }
-    .loading-letter:nth-child(9) { animation-delay: 0.8s; }
-    
-    @keyframes modernLetterReveal {
-      0% { 
-        opacity: 0; 
-        transform: translateY(100px) rotateX(90deg); 
-      }
-      25% { 
-        opacity: 1; 
-        transform: translateY(0) rotateX(0deg); 
-      }
-      75% { 
-        opacity: 1; 
-        transform: translateY(0) rotateX(0deg); 
-      }
-      100% { 
-        opacity: 0.7; 
-        transform: translateY(-20px) rotateX(-15deg); 
-      }
-    }
-    
-    @keyframes glowReveal {
-      0%, 25% { opacity: 0; }
-      50% { opacity: 0.8; }
-      75%, 100% { opacity: 0; }
+    @keyframes fadeIn {
+      0% { opacity: 0; transform: translateY(20px); }
+      100% { opacity: 1; transform: translateY(0); }
     }
     
     .loading-progress-container {
-      position: relative;
-      width: 400px;
-      height: 60px;
-      margin: 0 auto 3rem;
-      border: 2px solid rgba(255,255,255,0.1);
-      border-radius: 30px;
+      width: 200px;
+      height: 2px;
+      margin: 0 auto;
+      background: rgba(255, 255, 255, 0.1);
+      border-radius: 1px;
       overflow: hidden;
-      background: rgba(0,0,0,0.5);
-      backdrop-filter: blur(10px);
     }
     
     .loading-progress {
       height: 100%;
-      background: linear-gradient(45deg, var(--accent-green), #00ccff, #ff6b6b);
-      background-size: 300% 100%;
-      border-radius: 28px;
+      background: #ffffff;
       width: 0%;
-      transition: width 0.5s cubic-bezier(0.4, 0, 0.2, 1);
-      animation: progressGlow 3s ease-in-out infinite;
-      position: relative;
+      transition: width 0.3s ease;
+      border-radius: 1px;
     }
     
-    .loading-progress::after {
-      content: '';
-      position: absolute;
-      top: 0;
-      left: 0;
-      right: 0;
-      bottom: 0;
-      background: linear-gradient(90deg, transparent, rgba(255,255,255,0.3), transparent);
-      animation: progressShine 2s ease-in-out infinite;
-    }
-    
-    @keyframes progressGlow {
-      0%, 100% { background-position: 0% 50%; }
-      50% { background-position: 100% 50%; }
-    }
-    
-    @keyframes progressShine {
-      0% { transform: translateX(-100%); }
-      100% { transform: translateX(300%); }
-    }
-    
-    .loading-text {
-      font-family: 'Space Grotesk', sans-serif;
-      color: rgba(255,255,255,0.8);
-      font-size: 1.2rem;
-      font-weight: 400;
-      margin-top: 2rem;
-      opacity: 0;
-      animation: textFadeIn 1s ease-out 0.5s forwards;
-    }
-    
-    @keyframes textFadeIn {
-      0% { opacity: 0; transform: translateY(20px); }
-      100% { opacity: 1; transform: translateY(0); }
-    }
     
     .loading-screen.hidden {
       opacity: 0;
@@ -1369,7 +1258,7 @@
       color: #fff;
       text-align: center;
       margin-bottom: 80px;
-      line-height: 1.1;
+      line-height: 1.2;
       position: relative;
     }
     
@@ -1653,24 +1542,147 @@
   </style>
 </head>
 <body>
+  <!-- Mobile Detection and Alternative Page -->
+  <div id="mobile-page" style="display: none;">
+    <style>
+      #mobile-page {
+        position: fixed;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100vh;
+        background: linear-gradient(45deg, #000000, #111111);
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        justify-content: center;
+        text-align: center;
+        padding: 20px;
+        box-sizing: border-box;
+        z-index: 10000;
+      }
+      
+      .mobile-content {
+        max-width: 350px;
+        margin: 0 auto;
+      }
+      
+      .mobile-logo {
+        font-family: 'Space Grotesk', sans-serif;
+        font-size: 2.5rem;
+        font-weight: 700;
+        color: #ffffff;
+        margin-bottom: 2rem;
+        letter-spacing: -1px;
+      }
+      
+      .mobile-message {
+        font-family: 'Space Grotesk', sans-serif;
+        font-size: 1.1rem;
+        color: #cccccc;
+        line-height: 1.6;
+        margin-bottom: 2rem;
+      }
+      
+      .mobile-emoji {
+        font-size: 3rem;
+        margin: 1rem 0;
+        animation: bounce 2s infinite;
+      }
+      
+      @keyframes bounce {
+        0%, 20%, 50%, 80%, 100% { transform: translateY(0); }
+        40% { transform: translateY(-10px); }
+        60% { transform: translateY(-5px); }
+      }
+      
+      .contact-btn {
+        background: linear-gradient(45deg, #00ff88, #00ccff);
+        color: #000;
+        padding: 15px 30px;
+        border: none;
+        border-radius: 25px;
+        font-family: 'Space Grotesk', sans-serif;
+        font-weight: 600;
+        font-size: 1rem;
+        cursor: pointer;
+        text-decoration: none;
+        display: inline-block;
+        transition: all 0.3s ease;
+        box-shadow: 0 4px 15px rgba(0, 255, 136, 0.3);
+      }
+      
+      .contact-btn:hover {
+        transform: translateY(-2px);
+        box-shadow: 0 8px 25px rgba(0, 255, 136, 0.4);
+      }
+      
+      .desktop-hint {
+        position: absolute;
+        bottom: 30px;
+        left: 50%;
+        transform: translateX(-50%);
+        font-size: 0.9rem;
+        color: #666;
+        text-align: center;
+      }
+    </style>
+    
+    <div class="mobile-content">
+      <h1 class="mobile-logo">UNDEFINED STUDIO</h1>
+      <div class="mobile-emoji">📱💔</div>
+      <p class="mobile-message">
+        Bah non, va sur ton ordi !
+        <br><br>
+        C'est mieux sur desktop 💻
+      </p>
+      <a href="mailto:contact@undefinedstudio.fr" class="contact-btn">
+        📧 Nous contacter
+      </a>
+    </div>
+    
+    <div class="desktop-hint">
+      💻 Meilleur sur desktop • Promis !
+    </div>
+  </div>
+
+  <script>
+    // Détection mobile et affichage conditionnel
+    function isMobileDevice() {
+      return /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent) || 
+             window.innerWidth <= 768;
+    }
+    
+    function showMobilePage() {
+      const mobilePage = document.getElementById('mobile-page');
+      const mainContent = document.querySelector('body').children;
+      
+      if (isMobileDevice()) {
+        mobilePage.style.display = 'flex';
+        // Cacher tout le reste du contenu sauf la page mobile
+        for (let i = 1; i < mainContent.length; i++) {
+          if (mainContent[i].id !== 'mobile-page') {
+            mainContent[i].style.display = 'none';
+          }
+        }
+      }
+    }
+    
+    // Vérifier au chargement et au redimensionnement
+    document.addEventListener('DOMContentLoaded', showMobilePage);
+    window.addEventListener('resize', showMobilePage);
+    
+    // Vérification immédiate
+    showMobilePage();
+  </script>
+
   <!-- Loading Screen -->
   <div class="loading-screen" id="loadingScreen">
     <div class="loading-container">
-      <div class="loading-logo">
-        <span class="loading-letter" data-letter="U">U</span>
-        <span class="loading-letter" data-letter="N">N</span>
-        <span class="loading-letter" data-letter="D">D</span>
-        <span class="loading-letter" data-letter="E">E</span>
-        <span class="loading-letter" data-letter="F">F</span>
-        <span class="loading-letter" data-letter="I">I</span>
-        <span class="loading-letter" data-letter="N">N</span>
-        <span class="loading-letter" data-letter="E">E</span>
-        <span class="loading-letter" data-letter="D">D</span>
-      </div>
+      <div class="loading-logo">UNDEFINED STUDIO</div>
       <div class="loading-progress-container">
         <div class="loading-progress" id="loadingProgress"></div>
       </div>
-      <div class="loading-text">Chargement des expériences ultra modernes...</div>
     </div>
   </div>
 
@@ -1774,10 +1786,10 @@
         <div class="text-segment segment-intro">
           <div class="intro-wrapper">
             <h2 class="intro-text">
-              <span class="word" data-delay="0">Chaque</span>
-              <span class="word" data-delay="0.1">ligne</span>
-              <span class="word" data-delay="0.2">de</span>
-              <span class="word" data-delay="0.3">code</span>
+              <span class="word" data-delay="0">Nous</span>
+              <span class="word" data-delay="0.1">créons</span>
+              <span class="word" data-delay="0.2">des</span>
+              <span class="word" data-delay="0.3">outils</span>
             </h2>
             <div class="intro-shape shape-circle"></div>
             <div class="intro-shape shape-square"></div>
@@ -1788,7 +1800,7 @@
         <div class="text-segment segment-middle">
           <div class="middle-wrapper">
             <div class="text-transform">
-              <span class="transform-text">transforme</span>
+              <span class="transform-text">qui impactent</span>
               <div class="transform-shapes">
                 <div class="transform-shape" data-index="0"></div>
                 <div class="transform-shape" data-index="1"></div>
@@ -1796,8 +1808,8 @@
               </div>
             </div>
             <div class="text-secondary">
-              <span class="secondary-word">votre</span>
-              <span class="secondary-word">vision</span>
+              <span class="secondary-word">notre</span>
+              <span class="secondary-word">société</span>
             </div>
           </div>
         </div>
@@ -1806,9 +1818,9 @@
         <div class="text-segment segment-end">
           <div class="end-wrapper">
             <div class="final-text">
-              <span class="final-word">en</span>
-              <span class="final-word highlight">réalité</span>
-              <span class="final-word highlight">digitale</span>
+              <span class="final-word">et</span>
+              <span class="final-word highlight">changent</span>
+              <span class="final-word highlight">les choses</span>
             </div>
             <div class="impact-visual">
               <div class="impact-ring"></div>
@@ -2587,7 +2599,7 @@
   <!-- Contact Section -->
   <section class="contact-section">
     <div class="contact-container">
-      <h2 class="contact-title">Transformons vos idées en réalité</h2>
+      <h2 class="contact-title">Créons<br>ensemble</h2>
       
       <form class="contact-form">
         <div class="form-row">
@@ -2641,9 +2653,9 @@
         <div class="footer-section">
           <h4>Contact</h4>
           <ul>
-            <li><a href="mailto:contact@undefined-studio.com">contact@undefined-studio.com</a></li>
-            <li><a href="tel:+33600000000">+33 6 00 00 00 00</a></li>
-            <li>Paris, France</li>
+            <li><a href="mailto:contact@undefinedstudio.fr">contact@undefinedstudio.fr</a></li>
+            <li><a href="tel:+33612345678">+33 6 12 34 56 78</a></li>
+            <li>Marseille, France</li>
           </ul>
         </div>
         
