@@ -1236,7 +1236,7 @@ body {
 
 .contact-title {
   font-family: 'Space Grotesk', sans-serif;
-  font-size: clamp(3rem, 6vw, 7rem);
+  font-size: clamp(4rem, 7vw, 8rem);
   font-weight: 900;
   color: #fff;
   text-align: center;

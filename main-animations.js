@@ -37,14 +37,14 @@ function simulateLoading() {
   }, 120);
 }
 
-// Variables globales pour YOU CAN
+// Variables globales pour YOU CAN - Mots orientés impact social
 const wordsList = [
-  'inspirent.', 'simplifient.', 'connectent.', 'révolutionnent.',
-  'optimisent.', 'automatisent.', 'protègent.', 'stimulent.',
-  'transforment.', 'dynamisent.', 'facilitent.', 'catalysent.',
-  'modernisent.', 'accélèrent.', 'renforcent.', 'fluidifient.',
-  'harmonisent.', 'bousculent.', 'innovent.', 'valorisent.',
-  'libèrent.', 'unissent.'
+  'rendent service.', 'aident vraiment.', 'créent du lien.', 'changent la donne.',
+  'font du bien.', 'ouvrent des portes.', 'éclairent le chemin.', 'tendent la main.',
+  'bâtissent des ponts.', 'sèment l\'espoir.', 'donnent du sens.', 'tissent l\'avenir.',
+  'éveillent les cœurs.', 'libèrent le potentiel.', 'cultivent l\'humanité.', 'nourrissent l\'âme.',
+  'réchauffent le monde.', 'dessinent l\'espoir.', 'illuminent les vies.', 'transforment le quotidien.',
+  'construisent demain.', 'embrassent l\'humanité.'
 ];
 
 // Fonction principale d'initialisation des animations
@@ -154,8 +154,7 @@ ScrollTrigger.create({
     });
     
     // Gestion des états des mots - alignement ultra précis
-    
-    wordItems.forEach((word, index) => {
+    wordItems.forEach((word) => {
       // Position réelle du mot dans la viewport
       const wordRect = word.getBoundingClientRect();
       const wordsContainerRect = document.querySelector('.words-container').getBoundingClientRect();
@@ -178,19 +177,19 @@ ScrollTrigger.create({
     });
   },
   onEnter: () => {
-    // S'assurer du bon état initial - vérification de l'alignement réel
+    // S'assurer du bon état initial
     setTimeout(() => {
       const containerCenter = document.querySelector('.words-container').offsetHeight / 2;
-      wordItems.forEach((word, index) => {
+      wordItems.forEach((word) => {
         const wordRect = word.getBoundingClientRect();
         const wordsContainerRect = document.querySelector('.words-container').getBoundingClientRect();
         const wordCenterInContainer = wordRect.top + wordRect.height / 2 - wordsContainerRect.top;
         const distanceFromCenter = Math.abs(wordCenterInContainer - containerCenter);
         
         word.classList.remove('active', 'visible');
-        if (distanceFromCenter < 20) {
+        if (distanceFromCenter < 15) {
           word.classList.add('active');
-        } else if (distanceFromCenter < 100) {
+        } else if (distanceFromCenter < 80) {
           word.classList.add('visible');
         }
       });
@@ -405,13 +404,13 @@ function initTextAnimationSection() {
     });
     
     // Shapes animation - apparaissent en même temps que le texte
-    shapes.forEach((shape, index) => {
-      const shapeProgress = Math.max(0, Math.min(1, (adjustedProgress * 1.5) - index * 0.1));
+    shapes.forEach((shape, shapeIndex) => {
+      const shapeProgress = Math.max(0, Math.min(1, (adjustedProgress * 1.5) - shapeIndex * 0.1));
       
       gsap.to(shape, {
         opacity: shapeProgress * 0.8,
         scale: shapeProgress,
-        rotation: index === 1 ? 45 : 0,
+        rotation: shapeIndex === 1 ? 45 : 0,
         duration: 0.6,
         ease: "back.out(1.7)"
       });
@@ -449,7 +448,7 @@ function initTextAnimationSection() {
     
     // Mots secondaires
     if (progress > 0.5) {
-      secondaryWords.forEach((word, index) => {
+      secondaryWords.forEach((word) => {
         const wordProgress = Math.max(0, Math.min(1, (progress - 0.5) * 3));
         
         gsap.to(word, {
@@ -491,11 +490,11 @@ function initTextAnimationSection() {
       });
       
       // Créer des particules d'impact
-      createImpactParticles(particlesContainer, progress);
+      createImpactParticles(particlesContainer);
     }
   }
   
-  function createImpactParticles(container, progress) {
+  function createImpactParticles(container) {
     if (container.children.length > 15) return;
     
     for (let i = 0; i < 5; i++) {
